@@ -67,17 +67,19 @@ import brandESLint from "../../assets/img/brands/eslint.svg";
 import brandJavaScript from "../../assets/img/brands/javascript.svg";
 import brandTypeScript from "../../assets/img/brands/typescript.svg";
 
+import jiraSlayerLogo from "../../assets/img/jiraslayer/logo.png";
+
 const Navigation = () => (
   <Navbar expand="md" className="landing-navbar">
     <Container>
       <Navbar.Brand className="landing-brand" href="/">
-        <Logo /> AppStack{" "}
-        <Badge as="sup" bg="" className="badge-soft-primary p-1">
+        <Logo /> Jira Slayer
+        {/* <Badge as="sup" bg="" className="badge-soft-primary p-1">
           React
-        </Badge>
+        </Badge> */}
       </Navbar.Brand>
       <Nav className="ms-auto" navbar>
-        <Nav.Item className="d-none d-md-inline-block">
+        {/* <Nav.Item className="d-none d-md-inline-block">
           <Nav.Link
             href="/dashboard/default"
             target="_blank"
@@ -107,17 +109,17 @@ const Navigation = () => (
           >
             Support
           </Nav.Link>
-        </Nav.Item>
+        </Nav.Item> */}
       </Nav>
       <Button
-        href="https://themes.getbootstrap.com/product/appstack-react-admin-dashboard-template/"
-        target="_blank"
+        href="/auth/sign-in"
+        // target="_blank"
         rel="noopener noreferrer"
         variant="success"
         className="ms-2"
         size="lg"
       >
-        Get AppStack
+        Login
       </Button>
     </Container>
   </Navbar>
@@ -128,78 +130,26 @@ const Intro = () => (
     <Container className="landing-intro-content">
       <Row className="align-items-center">
         <Col lg="5" className="mx-auto">
-          <Badge bg="" className="badge-soft-primary p-1">
-            v3.0.0
-          </Badge>
-
-          <div className="my-4">
-            <OverlayTrigger
-              placement="bottom"
-              overlay={<Tooltip>Available for JavaScript</Tooltip>}
-            >
-              <img
-                width="40"
-                height="40"
-                src={brandJavaScript}
-                alt="JavaScript"
-                className="d-inline-block me-2"
-              />
-            </OverlayTrigger>
-            <OverlayTrigger
-              placement="bottom"
-              overlay={<Tooltip>Available for TypeScript</Tooltip>}
-            >
-              <img
-                width="40"
-                height="40"
-                src={brandTypeScript}
-                alt="TypeScript"
-                className="d-inline-block"
-              />
-            </OverlayTrigger>
-          </div>
 
           <h1 className="my-4">
-            Fully-featured React Admin & Dashboard Template
+            Requirement and Testing Management System
           </h1>
 
           <p className="text-lg">
-            A professional package that comes with hundreds of UI components,
-            forms, tables, charts, dashboards, pages and svg icons.
+            A system that comes with features to ease you in
+            requirement gathering, software testing, and generating reports.
           </p>
 
           <div className="my-4">
-            <div className="d-inline-block me-3">
-              <h2 className="text-dark">500+</h2>
-              <span className="text-muted">UI Components</span>
-            </div>
-            <div className="d-inline-block me-3">
-              <h2 className="text-dark">1500+</h2>
-              <span className="text-muted">SVG Icons</span>
-            </div>
-            <div className="d-inline-block">
-              <h2 className="text-dark">45+</h2>
-              <span className="text-muted">Pages</span>
-            </div>
-          </div>
-          <div className="my-4">
-            <a href="#demos" className="btn btn-primary btn-lg me-2">
-              View Demos
-            </a>
-            <a
-              href="https://themes.getbootstrap.com/product/appstack-react-admin-dashboard-template/"
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-outline-primary btn-lg me-1"
-            >
-              Purchase
+            <a href="/auth/sign-in" className="btn btn-primary btn-lg me-2">
+              Login
             </a>
           </div>
         </Col>
         <Col lg="7" className="d-none d-lg-flex mx-auto text-center">
           <div className="landing-intro-screenshot pb-3">
             <img
-              src={screenshotMixed}
+              src={jiraSlayerLogo}
               alt="Dark/Light Bootstrap React Admin Template"
               className="img-fluid"
             />
@@ -210,515 +160,515 @@ const Intro = () => (
   </section>
 );
 
-const ColorSchemesAndLayouts = () => (
-  <section className="py-6 bg-white">
-    <Container className="position-relative z-3">
-      <Row>
-        <Col md="12" className="mx-auto text-center">
-          <Row>
-            <div className="col-lg-10 col-xl-9 mx-auto">
-              <div className="mb-4">
-                <h2 className="h1 mb-3">
-                  Multiple color schemes &amp; layouts
-                </h2>
-                <p className="text-muted fs-lg">
-                  4 Pre-built color schemes and multiple layout types are
-                  available to make this template your very own. All the color
-                  schemes can take variation in color and styling, that can
-                  easily be modified using Sass variables.
-                </p>
-              </div>
-            </div>
-          </Row>
+// const ColorSchemesAndLayouts = () => (
+//   <section className="py-6 bg-white">
+//     <Container className="position-relative z-3">
+//       <Row>
+//         <Col md="12" className="mx-auto text-center">
+//           <Row>
+//             <div className="col-lg-10 col-xl-9 mx-auto">
+//               <div className="mb-4">
+//                 <h2 className="h1 mb-3">
+//                   Multiple color schemes &amp; layouts
+//                 </h2>
+//                 <p className="text-muted fs-lg">
+//                   4 Pre-built color schemes and multiple layout types are
+//                   available to make this template your very own. All the color
+//                   schemes can take variation in color and styling, that can
+//                   easily be modified using Sass variables.
+//                 </p>
+//               </div>
+//             </div>
+//           </Row>
 
-          <Row>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/default?theme=default"
-              >
-                <img
-                  src={screenshotThemeDefault}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>Default</h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/default?sidebarBehavior=compact"
-              >
-                <img
-                  src={screenshotSidebarCompact}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Compact Sidebar Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>
-                Compact sidebar{" "}
-                <sup>
-                  <Badge as="small" bg="primary">
-                    New
-                  </Badge>
-                </sup>
-              </h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/default?theme=dark"
-              >
-                <img
-                  src={screenshotThemeDark}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Dark Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>
-                Dark{" "}
-                <sup>
-                  <Badge as="small" bg="primary">
-                    New
-                  </Badge>
-                </sup>
-              </h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/default?theme=colored"
-              >
-                <img
-                  src={screenshotThemeColored}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Colored Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>
-                Colored{" "}
-                <sup>
-                  <Badge as="small" bg="primary">
-                    New
-                  </Badge>
-                </sup>
-              </h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/default?theme=light"
-              >
-                <img
-                  src={screenshotThemeLight}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Light Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>Light</h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/default?sidebarPosition=right"
-              >
-                <img
-                  src={screenshotSidebarRight}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Right Sidebar Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>
-                Right sidebar{" "}
-                <sup>
-                  <Badge as="small" bg="primary">
-                    New
-                  </Badge>
-                </sup>
-              </h4>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </Container>
-  </section>
-);
+//           <Row>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/default?theme=default"
+//               >
+//                 <img
+//                   src={screenshotThemeDefault}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>Default</h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/default?sidebarBehavior=compact"
+//               >
+//                 <img
+//                   src={screenshotSidebarCompact}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Compact Sidebar Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>
+//                 Compact sidebar{" "}
+//                 <sup>
+//                   <Badge as="small" bg="primary">
+//                     New
+//                   </Badge>
+//                 </sup>
+//               </h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/default?theme=dark"
+//               >
+//                 <img
+//                   src={screenshotThemeDark}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Dark Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>
+//                 Dark{" "}
+//                 <sup>
+//                   <Badge as="small" bg="primary">
+//                     New
+//                   </Badge>
+//                 </sup>
+//               </h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/default?theme=colored"
+//               >
+//                 <img
+//                   src={screenshotThemeColored}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Colored Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>
+//                 Colored{" "}
+//                 <sup>
+//                   <Badge as="small" bg="primary">
+//                     New
+//                   </Badge>
+//                 </sup>
+//               </h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/default?theme=light"
+//               >
+//                 <img
+//                   src={screenshotThemeLight}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Light Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>Light</h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/default?sidebarPosition=right"
+//               >
+//                 <img
+//                   src={screenshotSidebarRight}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Right Sidebar Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>
+//                 Right sidebar{" "}
+//                 <sup>
+//                   <Badge as="small" bg="primary">
+//                     New
+//                   </Badge>
+//                 </sup>
+//               </h4>
+//             </Col>
+//           </Row>
+//         </Col>
+//       </Row>
+//     </Container>
+//   </section>
+// );
 
-const Integrations = () => (
-  <section className="pt-6">
-    <Container>
-      <Row>
-        <Col md="10" className="mx-auto text-center">
-          <div className="mb-5">
-            <h2 className="h1">
-              Launch faster with ready-to-deploy integrations
-            </h2>
-            <p className="text-muted fs-lg">
-              AppStack React includes multiple ready-to-deploy integrations,
-              including Redux, ESLint, Prettier, Auth0, Firebase Authentication,
-              Amazon Cognito &amp; JSON Web Token Authentication.
-            </p>
+// const Integrations = () => (
+//   <section className="pt-6">
+//     <Container>
+//       <Row>
+//         <Col md="10" className="mx-auto text-center">
+//           <div className="mb-5">
+//             <h2 className="h1">
+//               Launch faster with ready-to-deploy integrations
+//             </h2>
+//             <p className="text-muted fs-lg">
+//               AppStack React includes multiple ready-to-deploy integrations,
+//               including Redux, ESLint, Prettier, Auth0, Firebase Authentication,
+//               Amazon Cognito &amp; JSON Web Token Authentication.
+//             </p>
 
-            <div className="my-4">
-              <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>React v18</Tooltip>}
-              >
-                <div className="landing-integration">
-                  <img src={brandReact} alt="React v18" />
-                </div>
-              </OverlayTrigger>
-              <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>Redux</Tooltip>}
-              >
-                <div className="landing-integration">
-                  <img src={brandRedux} alt="Redux" />
-                </div>
-              </OverlayTrigger>
-              <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>React Router v6</Tooltip>}
-              >
-                <div className="landing-integration">
-                  <img
-                    src={brandReactRouter}
-                    alt="React Router v6"
-                    height="36"
-                    style={{ margin: "2px 0" }}
-                  />
-                </div>
-              </OverlayTrigger>
-              <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>Firebase Authentication</Tooltip>}
-              >
-                <div className="landing-integration">
-                  <img src={brandFirebase} alt="Firebase Authentication" />
-                </div>
-              </OverlayTrigger>
-              <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>Amazon Cognito</Tooltip>}
-              >
-                <div className="landing-integration">
-                  <img src={brandCognito} alt="Amazon Cognito" />
-                </div>
-              </OverlayTrigger>
-              <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>Auth0</Tooltip>}
-              >
-                <div className="landing-integration">
-                  <img src={brandAuth0} alt="Auth0" />
-                </div>
-              </OverlayTrigger>
-              <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>JSON Web Token</Tooltip>}
-              >
-                <div className="landing-integration">
-                  <img src={brandJWT} alt="JSON Web Token" />
-                </div>
-              </OverlayTrigger>
-              <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip>ESLint</Tooltip>}
-              >
-                <div className="landing-integration">
-                  <img src={brandESLint} alt="ESLint" />
-                </div>
-              </OverlayTrigger>
-            </div>
+//             <div className="my-4">
+//               <OverlayTrigger
+//                 placement="bottom"
+//                 overlay={<Tooltip>React v18</Tooltip>}
+//               >
+//                 <div className="landing-integration">
+//                   <img src={brandReact} alt="React v18" />
+//                 </div>
+//               </OverlayTrigger>
+//               <OverlayTrigger
+//                 placement="bottom"
+//                 overlay={<Tooltip>Redux</Tooltip>}
+//               >
+//                 <div className="landing-integration">
+//                   <img src={brandRedux} alt="Redux" />
+//                 </div>
+//               </OverlayTrigger>
+//               <OverlayTrigger
+//                 placement="bottom"
+//                 overlay={<Tooltip>React Router v6</Tooltip>}
+//               >
+//                 <div className="landing-integration">
+//                   <img
+//                     src={brandReactRouter}
+//                     alt="React Router v6"
+//                     height="36"
+//                     style={{ margin: "2px 0" }}
+//                   />
+//                 </div>
+//               </OverlayTrigger>
+//               <OverlayTrigger
+//                 placement="bottom"
+//                 overlay={<Tooltip>Firebase Authentication</Tooltip>}
+//               >
+//                 <div className="landing-integration">
+//                   <img src={brandFirebase} alt="Firebase Authentication" />
+//                 </div>
+//               </OverlayTrigger>
+//               <OverlayTrigger
+//                 placement="bottom"
+//                 overlay={<Tooltip>Amazon Cognito</Tooltip>}
+//               >
+//                 <div className="landing-integration">
+//                   <img src={brandCognito} alt="Amazon Cognito" />
+//                 </div>
+//               </OverlayTrigger>
+//               <OverlayTrigger
+//                 placement="bottom"
+//                 overlay={<Tooltip>Auth0</Tooltip>}
+//               >
+//                 <div className="landing-integration">
+//                   <img src={brandAuth0} alt="Auth0" />
+//                 </div>
+//               </OverlayTrigger>
+//               <OverlayTrigger
+//                 placement="bottom"
+//                 overlay={<Tooltip>JSON Web Token</Tooltip>}
+//               >
+//                 <div className="landing-integration">
+//                   <img src={brandJWT} alt="JSON Web Token" />
+//                 </div>
+//               </OverlayTrigger>
+//               <OverlayTrigger
+//                 placement="bottom"
+//                 overlay={<Tooltip>ESLint</Tooltip>}
+//               >
+//                 <div className="landing-integration">
+//                   <img src={brandESLint} alt="ESLint" />
+//                 </div>
+//               </OverlayTrigger>
+//             </div>
 
-            <Button
-              variant="primary"
-              size="lg"
-              as="a"
-              href="/docs/introduction"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Open documentation
-            </Button>
-          </div>
-        </Col>
-      </Row>
-    </Container>
-  </section>
-);
+//             <Button
+//               variant="primary"
+//               size="lg"
+//               as="a"
+//               href="/docs/introduction"
+//               target="_blank"
+//               rel="noreferrer"
+//             >
+//               Open documentation
+//             </Button>
+//           </div>
+//         </Col>
+//       </Row>
+//     </Container>
+//   </section>
+// );
 
-const Testimonials = () => (
-  <section className="py-6">
-    <Container>
-      <div className="mb-5 text-center">
-        <h2 className="h1">Developers love AppStack React</h2>
-        <p className="text-muted fs-lg">
-          Here's what some of our 5,000+ customers have to say about working
-          with our products.
-        </p>
-      </div>
-      <Row>
-        <Col md="6" lg="4">
-          <Card as="blockquote" className="landing-quote border">
-            <Card.Body className="p-4">
-              <div className="d-flex align-items-center mb-3">
-                <div>
-                  <img
-                    src={brandBootstrap}
-                    width="48"
-                    height="48"
-                    alt="Bootstrap"
-                  />
-                </div>
-                <div className="ps-3">
-                  <h5 className="mb-1 mt-2">Nikita</h5>
-                  <small className="d-block text-muted h5 fw-normal">
-                    Head of Product
-                  </small>
-                </div>
-              </div>
-              <p className="lead mb-2">
-                “We are totally amazed with a simplicity and the design of the
-                template.{" "}
-                <span>Probably saved us hundreds of hours of development.</span>{" "}
-                We are absolutely amazed with the support Bootlab has provided
-                us.”
-              </p>
+// const Testimonials = () => (
+//   <section className="py-6">
+//     <Container>
+//       <div className="mb-5 text-center">
+//         <h2 className="h1">Developers love AppStack React</h2>
+//         <p className="text-muted fs-lg">
+//           Here's what some of our 5,000+ customers have to say about working
+//           with our products.
+//         </p>
+//       </div>
+//       <Row>
+//         <Col md="6" lg="4">
+//           <Card as="blockquote" className="landing-quote border">
+//             <Card.Body className="p-4">
+//               <div className="d-flex align-items-center mb-3">
+//                 <div>
+//                   <img
+//                     src={brandBootstrap}
+//                     width="48"
+//                     height="48"
+//                     alt="Bootstrap"
+//                   />
+//                 </div>
+//                 <div className="ps-3">
+//                   <h5 className="mb-1 mt-2">Nikita</h5>
+//                   <small className="d-block text-muted h5 fw-normal">
+//                     Head of Product
+//                   </small>
+//                 </div>
+//               </div>
+//               <p className="lead mb-2">
+//                 “We are totally amazed with a simplicity and the design of the
+//                 template.{" "}
+//                 <span>Probably saved us hundreds of hours of development.</span>{" "}
+//                 We are absolutely amazed with the support Bootlab has provided
+//                 us.”
+//               </p>
 
-              <div className="landing-stars">
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md="6" lg="4">
-          <Card as="blockquote" className="landing-quote border">
-            <Card.Body className="p-4">
-              <div className="d-flex align-items-center mb-3">
-                <div>
-                  <img
-                    src={brandBootstrap}
-                    width="48"
-                    height="48"
-                    alt="Bootstrap"
-                  />
-                </div>
-                <div className="ps-3">
-                  <h5 className="mb-1 mt-2">Alejandro</h5>
-                  <small className="d-block text-muted h5 fw-normal">
-                    Back-end Developer
-                  </small>
-                </div>
-              </div>
-              <p className="lead mb-2">
-                “Everything is so properly set up that{" "}
-                <span>
-                  any new additions I'd make would feel like a native extension
-                  of the theme
-                </span>{" "}
-                versus a simple hack. I definitely feel like this will save me
-                hundredths of hours I'd otherwise spend on designing.”
-              </p>
+//               <div className="landing-stars">
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//               </div>
+//             </Card.Body>
+//           </Card>
+//         </Col>
+//         <Col md="6" lg="4">
+//           <Card as="blockquote" className="landing-quote border">
+//             <Card.Body className="p-4">
+//               <div className="d-flex align-items-center mb-3">
+//                 <div>
+//                   <img
+//                     src={brandBootstrap}
+//                     width="48"
+//                     height="48"
+//                     alt="Bootstrap"
+//                   />
+//                 </div>
+//                 <div className="ps-3">
+//                   <h5 className="mb-1 mt-2">Alejandro</h5>
+//                   <small className="d-block text-muted h5 fw-normal">
+//                     Back-end Developer
+//                   </small>
+//                 </div>
+//               </div>
+//               <p className="lead mb-2">
+//                 “Everything is so properly set up that{" "}
+//                 <span>
+//                   any new additions I'd make would feel like a native extension
+//                   of the theme
+//                 </span>{" "}
+//                 versus a simple hack. I definitely feel like this will save me
+//                 hundredths of hours I'd otherwise spend on designing.”
+//               </p>
 
-              <div className="landing-stars">
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md="6" lg="4" className="d-block d-md-none d-lg-block">
-          <Card as="blockquote" className="landing-quote border">
-            <Card.Body className="p-4">
-              <div className="d-flex align-items-center mb-3">
-                <div>
-                  <img
-                    src={brandBootstrap}
-                    width="48"
-                    height="48"
-                    alt="Bootstrap"
-                  />
-                </div>
-                <div className="ps-3">
-                  <h5 className="mb-1 mt-2">Jordi</h5>
-                  <small className="d-block text-muted h5 fw-normal">
-                    Front-end Developer
-                  </small>
-                </div>
-              </div>
-              <p className="lead mb-2">
-                “I ran into a problem and contacted support. Within 24 hours, I
-                not only received a response but even an updated version that
-                solved my problem and works like a charm.{" "}
-                <span>Fantastic customer service!</span>”
-              </p>
+//               <div className="landing-stars">
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//               </div>
+//             </Card.Body>
+//           </Card>
+//         </Col>
+//         <Col md="6" lg="4" className="d-block d-md-none d-lg-block">
+//           <Card as="blockquote" className="landing-quote border">
+//             <Card.Body className="p-4">
+//               <div className="d-flex align-items-center mb-3">
+//                 <div>
+//                   <img
+//                     src={brandBootstrap}
+//                     width="48"
+//                     height="48"
+//                     alt="Bootstrap"
+//                   />
+//                 </div>
+//                 <div className="ps-3">
+//                   <h5 className="mb-1 mt-2">Jordi</h5>
+//                   <small className="d-block text-muted h5 fw-normal">
+//                     Front-end Developer
+//                   </small>
+//                 </div>
+//               </div>
+//               <p className="lead mb-2">
+//                 “I ran into a problem and contacted support. Within 24 hours, I
+//                 not only received a response but even an updated version that
+//                 solved my problem and works like a charm.{" "}
+//                 <span>Fantastic customer service!</span>”
+//               </p>
 
-              <div className="landing-stars">
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-                <FontAwesomeIcon icon={faStar} />
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
-  </section>
-);
+//               <div className="landing-stars">
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//                 <FontAwesomeIcon icon={faStar} />
+//               </div>
+//             </Card.Body>
+//           </Card>
+//         </Col>
+//       </Row>
+//     </Container>
+//   </section>
+// );
 
-const DashboardsAndPages = () => (
-  <section className="py-6 bg-white" id="demos">
-    <Container className="position-relative z-3">
-      <Row>
-        <Col md="12" className="mx-auto text-center">
-          <Row>
-            <div className="col-lg-10 col-xl-9 mx-auto">
-              <div className="mb-4">
-                <h2 className="h1 mb-3">Multiple dashboards &amp; pages</h2>
-                <p className="text-muted fs-lg">
-                  5 Dashboards and 40+ Pages featuring various components,
-                  giving you the freedom of choosing and combining. All
-                  components can take variation in color and styling, that can
-                  easily be modified using Sass.
-                </p>
-              </div>
-            </div>
-          </Row>
+// const DashboardsAndPages = () => (
+//   <section className="py-6 bg-white" id="demos">
+//     <Container className="position-relative z-3">
+//       <Row>
+//         <Col md="12" className="mx-auto text-center">
+//           <Row>
+//             <div className="col-lg-10 col-xl-9 mx-auto">
+//               <div className="mb-4">
+//                 <h2 className="h1 mb-3">Multiple dashboards &amp; pages</h2>
+//                 <p className="text-muted fs-lg">
+//                   5 Dashboards and 40+ Pages featuring various components,
+//                   giving you the freedom of choosing and combining. All
+//                   components can take variation in color and styling, that can
+//                   easily be modified using Sass.
+//                 </p>
+//               </div>
+//             </div>
+//           </Row>
 
-          <Row>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/default"
-              >
-                <img
-                  src={screenshotDashboardDefault}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>Default Dashboard</h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/analytics"
-              >
-                <img
-                  src={screenshotDashboardAnalytics}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Analytics Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>Analytics Dashboard</h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/saas"
-              >
-                <img
-                  src={screenshotDashboardSaaS}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="SaaS Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>SaaS Dashboard</h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/social"
-              >
-                <img
-                  src={screenshotDashboardSocial}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Social Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>Social Dashboard</h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/dashboard/crypto"
-              >
-                <img
-                  src={screenshotDashboardCrypto}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Crypto Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>
-                Crypto Dashboard{" "}
-                <sup>
-                  <Badge as="small" bg="primary">
-                    New
-                  </Badge>
-                </sup>
-              </h4>
-            </Col>
-            <Col md="4" className="py-3">
-              <Link
-                className="d-block mb-3 mx-1"
-                target="_blank"
-                rel="noreferrer"
-                to="/pages/projects"
-              >
-                <img
-                  src={screenshotPageProjects}
-                  className="img-fluid rounded-lg landing-img"
-                  alt="Projects Bootstrap 5 Dashboard Theme"
-                />
-              </Link>
-              <h4>
-                Projects Dashboard{" "}
-                <sup>
-                  <Badge as="small" bg="primary">
-                    New
-                  </Badge>
-                </sup>
-              </h4>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </Container>
-  </section>
-);
+//           <Row>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/default"
+//               >
+//                 <img
+//                   src={screenshotDashboardDefault}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>Default Dashboard</h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/analytics"
+//               >
+//                 <img
+//                   src={screenshotDashboardAnalytics}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Analytics Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>Analytics Dashboard</h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/saas"
+//               >
+//                 <img
+//                   src={screenshotDashboardSaaS}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="SaaS Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>SaaS Dashboard</h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/social"
+//               >
+//                 <img
+//                   src={screenshotDashboardSocial}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Social Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>Social Dashboard</h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/dashboard/crypto"
+//               >
+//                 <img
+//                   src={screenshotDashboardCrypto}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Crypto Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>
+//                 Crypto Dashboard{" "}
+//                 <sup>
+//                   <Badge as="small" bg="primary">
+//                     New
+//                   </Badge>
+//                 </sup>
+//               </h4>
+//             </Col>
+//             <Col md="4" className="py-3">
+//               <Link
+//                 className="d-block mb-3 mx-1"
+//                 target="_blank"
+//                 rel="noreferrer"
+//                 to="/pages/projects"
+//               >
+//                 <img
+//                   src={screenshotPageProjects}
+//                   className="img-fluid rounded-lg landing-img"
+//                   alt="Projects Bootstrap 5 Dashboard Theme"
+//                 />
+//               </Link>
+//               <h4>
+//                 Projects Dashboard{" "}
+//                 <sup>
+//                   <Badge as="small" bg="primary">
+//                     New
+//                   </Badge>
+//                 </sup>
+//               </h4>
+//             </Col>
+//           </Row>
+//         </Col>
+//       </Row>
+//     </Container>
+//   </section>
+// );
 
 const Features = () => (
   <section className="py-6">
@@ -984,10 +934,10 @@ const Landing = () => {
     <React.Fragment>
       <Navigation />
       <Intro />
-      <ColorSchemesAndLayouts />
-      <Integrations />
-      <Testimonials />
-      <DashboardsAndPages />
+      {/* <ColorSchemesAndLayouts /> */}
+      {/* <Integrations /> */}
+      {/* <Testimonials /> */}
+      {/* <DashboardsAndPages /> */}
       <Features />
       <Faq />
       <Footer />
