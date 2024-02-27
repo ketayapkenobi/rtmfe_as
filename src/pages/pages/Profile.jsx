@@ -317,7 +317,7 @@ const Profile = () => (
           <ProfileDetails />
         </Col>
         <Col md="8" xl="9">
-          <Activities />
+          {/* <Activities /> */}
         </Col>
       </Row>
     </Container>

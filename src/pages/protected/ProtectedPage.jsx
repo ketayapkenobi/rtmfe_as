@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
 
 import Default from "../dashboards/Default";
 
 function ProtectedPage() {
   const [show, setShow] = useState(true);
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
 
   return (
     <React.Fragment>
@@ -18,6 +26,7 @@ function ProtectedPage() {
           <div className="alert-message">
             This page is only visible by authenticated users.
           </div>
+          <div>Token: {token}</div>
         </Alert>
       )}
 
