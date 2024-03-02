@@ -9,7 +9,7 @@ const SignInPage = () => (
   <React.Fragment>
     <Helmet title="Sign In" />
     <div className="text-center mt-4">
-      <h2>Welcome back, Chris</h2>
+      <h2>Welcome back</h2>
       <p className="lead">Sign in to your account to continue</p>
     </div>
 
@@ -17,13 +17,13 @@ const SignInPage = () => (
       <Card.Body>
         <div className="m-sm-4">
           <div className="text-center">
-            <img
+            {/* <img
               src={avatar}
               alt="Chris Wood"
               className="img-fluid rounded-circle"
               width="132"
               height="132"
-            />
+            /> */}
           </div>
           <SignIn />
         </div>

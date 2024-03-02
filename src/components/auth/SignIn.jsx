@@ -58,10 +58,10 @@ function SignIn() {
       }) => (
         <Form onSubmit={handleSubmit}>
           <Alert className="my-3" variant="primary">
-            <div className="alert-message">
+            {/* <div className="alert-message">
               Use <strong>demo@bootlab.io</strong> and{" "}
               <strong>unsafepassword</strong> to sign in
-            </div>
+            </div> */}
           </Alert>
           {errors.submit && (
             <Alert className="my-3" variant="danger">

@@ -26,7 +26,7 @@ const App = () => {
     <HelmetProvider>
       <Helmet
         titleTemplate="%s | AppStack - React Admin & Dashboard Template"
-        defaultTitle="AppStack - React Admin & Dashboard Template"
+        defaultTitle="Artemiz - Requirement and Testing Management System"
       />
       <Suspense fallback={<Loader />}>
         <Provider store={store}>

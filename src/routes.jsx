@@ -9,6 +9,7 @@ import LandingLayout from "./layouts/Landing";
 
 // Guards
 import AuthGuard from "./components/guards/AuthGuard";
+import ProjectDetails from "./components/projects/ProjectDetails";
 
 // Landing
 const Landing = lazy(() => import("./pages/landing/Landing"));
@@ -188,6 +189,10 @@ const routes = [
       {
         path: "blank",
         element: <Blank />,
+      },
+      {
+        path: "project/:id",
+        element: <ProjectDetails />,
       },
     ],
   },

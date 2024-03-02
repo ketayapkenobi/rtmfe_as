@@ -73,7 +73,7 @@ const Navigation = () => (
   <Navbar expand="md" className="landing-navbar">
     <Container>
       <Navbar.Brand className="landing-brand" href="/">
-        <Logo /> Jira Slayer
+        <Logo /> Artemiz
         {/* <Badge as="sup" bg="" className="badge-soft-primary p-1">
           React
         </Badge> */}
@@ -678,8 +678,7 @@ const Features = () => (
           <div className="mb-5">
             <h2 className="h1">Features you'll love</h2>
             <p className="text-muted text-lg">
-              A responsive dashboard built for everyone who wants to create
-              webapps on top of Bootstrap &amp; React.
+              A requirement and testing management system built for making your process in software development more convenient
             </p>
           </div>
 
@@ -898,7 +897,7 @@ const Footer = () => (
       <Row>
         <Col md="9" lg="8" xl="6" className="mx-auto">
           <h2 className="h1 mb-3">
-            Join over 5,000 developers who are already working with our products
+            Join us in using this website to ease your software development process
           </h2>
           <Button
             variant="success"
@@ -908,7 +907,7 @@ const Footer = () => (
             rel="noopener noreferrer"
             className="mt-n1"
           >
-            Purchase Now
+            Join Now
           </Button>
         </Col>
       </Row>
@@ -939,7 +938,7 @@ const Landing = () => {
       {/* <Testimonials /> */}
       {/* <DashboardsAndPages /> */}
       <Features />
-      <Faq />
+      {/* <Faq /> */}
       <Footer />
     </React.Fragment>
   );
