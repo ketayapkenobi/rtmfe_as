@@ -37,7 +37,7 @@ function SignIn() {
           localStorage.setItem("token", response.data.token);
 
           // Redirect to private route
-          navigate("/private");
+          navigate("/dashboard");
         } catch (error) {
           const message = error.response.data.error || "Something went wrong";
 

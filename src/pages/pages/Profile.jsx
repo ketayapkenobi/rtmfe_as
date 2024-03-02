@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 
@@ -24,113 +25,148 @@ import avatar5 from "../../assets/img/avatars/avatar-5.jpg";
 import unsplash1 from "../../assets/img/photos/unsplash-1.jpg";
 import unsplash2 from "../../assets/img/photos/unsplash-2.jpg";
 
-const ProfileDetails = () => (
-  <Card>
-    <Card.Header>
-      <Card.Title className="mb-0">Profile Details</Card.Title>
-    </Card.Header>
-    <Card.Body className="text-center">
-      <img
-        src={avatar4}
-        alt="Stacie Hall"
-        className="img-fluid rounded-circle mb-2"
-        width="128"
-        height="128"
-      />
-      <Card.Title className="mb-0">Stacie Hall</Card.Title>
-      <div className="text-muted mb-2">Lead Developer</div>
+const ProfileDetails = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
 
-      <div>
-        <Button size="sm" variant="primary" className="me-1">
-          Follow
-        </Button>
-        <Button size="sm" variant="primary">
-          <MessageSquare width={16} height={16} /> Message
-        </Button>
-      </div>
-    </Card.Body>
+  useEffect(() => {
+    const fetchUser = async () => {
+      const authToken = localStorage.getItem('token');
+      try {
+        const response = await fetch("http://localhost:8000/api/current-user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
 
-    <hr className="my-0" />
+    fetchUser();
+  }, []);
 
-    <Card.Body>
-      <Card.Title>Skills</Card.Title>
-      <Badge bg="primary" className="me-2 my-1">
-        HTML
-      </Badge>
-      <Badge bg="primary" className="me-2 my-1">
-        JavaScript
-      </Badge>
-      <Badge bg="primary" className="me-2 my-1">
-        Sass
-      </Badge>
-      <Badge bg="primary" className="me-2 my-1">
-        Angular
-      </Badge>
-      <Badge bg="primary" className="me-2 my-1">
-        Vue
-      </Badge>
-      <Badge bg="primary" className="me-2 my-1">
-        React
-      </Badge>
-      <Badge bg="primary" className="me-2 my-1">
-        Redux
-      </Badge>
-      <Badge bg="primary" className="me-2 my-1">
-        UI
-      </Badge>
-      <Badge bg="primary" className="me-2 my-1">
-        UX
-      </Badge>
-    </Card.Body>
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title className="mb-0">Profile Details</Card.Title>
+      </Card.Header>
+      <Card.Body className="text-center">
+        {user ? (
+          <>
+            <img
+              src={avatar4}
+              alt="Stacie Hall"
+              className="img-fluid rounded-circle mb-2"
+              width="128"
+              height="128"
+            />
+            <Card.Title className="mb-0">{user.name}</Card.Title>
+            <div className="text-muted mb-2">Lead Developer</div>
+            <div>
+              <Button size="sm" variant="primary" className="me-1">
+                Follow
+              </Button>
+              <Button size="sm" variant="primary">
+                <MessageSquare width={16} height={16} /> Message
+              </Button>
+            </div>
+          </>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </Card.Body>
 
-    <hr className="my-0" />
-    <Card.Body>
-      <Card.Title>About</Card.Title>
-      <ul className="list-unstyled mb-0">
-        <li className="mb-1">
-          <Home width={14} height={14} className="me-1" /> Lives in{" "}
-          <Link to="/dashboard/default">San Francisco, SA</Link>
-        </li>
+      <hr className="my-0" />
 
-        <li className="mb-1">
-          <Briefcase width={14} height={14} className="me-1" /> Works at{" "}
-          <Link to="/dashboard/default">GitHub</Link>
-        </li>
-        <li className="mb-1">
-          <MapPin width={14} height={14} className="me-1" /> From{" "}
-          <Link to="/dashboard/default">Boston</Link>
-        </li>
-      </ul>
-    </Card.Body>
-    <hr className="my-0" />
-    <Card.Body>
-      <Card.Title>Elsewhere</Card.Title>
+      <Card.Body>
+        <Card.Title>Skills</Card.Title>
+        <Badge bg="primary" className="me-2 my-1">
+          HTML
+        </Badge>
+        <Badge bg="primary" className="me-2 my-1">
+          JavaScript
+        </Badge>
+        <Badge bg="primary" className="me-2 my-1">
+          Sass
+        </Badge>
+        <Badge bg="primary" className="me-2 my-1">
+          Angular
+        </Badge>
+        <Badge bg="primary" className="me-2 my-1">
+          Vue
+        </Badge>
+        <Badge bg="primary" className="me-2 my-1">
+          React
+        </Badge>
+        <Badge bg="primary" className="me-2 my-1">
+          Redux
+        </Badge>
+        <Badge bg="primary" className="me-2 my-1">
+          UI
+        </Badge>
+        <Badge bg="primary" className="me-2 my-1">
+          UX
+        </Badge>
+      </Card.Body>
 
-      <ul className="list-unstyled mb-0">
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faGlobe} fixedWidth className="me-1" />
-          <Link to="/dashboard/default">staciehall.co</Link>
-        </li>
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faTwitter} fixedWidth className="me-1" />
-          <Link to="/dashboard/default">Twitter</Link>
-        </li>
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faFacebook} fixedWidth className="me-1" />
-          <Link to="/dashboard/default">Facebook</Link>
-        </li>
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faInstagram} fixedWidth className="me-1" />
-          <Link to="/dashboard/default">Instagram</Link>
-        </li>
-        <li className="mb-1">
-          <FontAwesomeIcon icon={faLinkedin} fixedWidth className="me-1" />
-          <Link to="/dashboard/default">LinkedIn</Link>
-        </li>
-      </ul>
-    </Card.Body>
-  </Card>
-);
+      <hr className="my-0" />
+      <Card.Body>
+        <Card.Title>About</Card.Title>
+        <ul className="list-unstyled mb-0">
+          <li className="mb-1">
+            <Home width={14} height={14} className="me-1" /> Lives in{" "}
+            <Link to="/dashboard/default">San Francisco, SA</Link>
+          </li>
+
+          <li className="mb-1">
+            <Briefcase width={14} height={14} className="me-1" /> Works at{" "}
+            <Link to="/dashboard/default">GitHub</Link>
+          </li>
+          <li className="mb-1">
+            <MapPin width={14} height={14} className="me-1" /> From{" "}
+            <Link to="/dashboard/default">Boston</Link>
+          </li>
+        </ul>
+      </Card.Body>
+      <hr className="my-0" />
+      <Card.Body>
+        <Card.Title>Elsewhere</Card.Title>
+
+        <ul className="list-unstyled mb-0">
+          <li className="mb-1">
+            <FontAwesomeIcon icon={faGlobe} fixedWidth className="me-1" />
+            <Link to="/dashboard/default">staciehall.co</Link>
+          </li>
+          <li className="mb-1">
+            <FontAwesomeIcon icon={faTwitter} fixedWidth className="me-1" />
+            <Link to="/dashboard/default">Twitter</Link>
+          </li>
+          <li className="mb-1">
+            <FontAwesomeIcon icon={faFacebook} fixedWidth className="me-1" />
+            <Link to="/dashboard/default">Facebook</Link>
+          </li>
+          <li className="mb-1">
+            <FontAwesomeIcon icon={faInstagram} fixedWidth className="me-1" />
+            <Link to="/dashboard/default">Instagram</Link>
+          </li>
+          <li className="mb-1">
+            <FontAwesomeIcon icon={faLinkedin} fixedWidth className="me-1" />
+            <Link to="/dashboard/default">LinkedIn</Link>
+          </li>
+        </ul>
+      </Card.Body>
+    </Card>
+  );
+};
 
 const Activities = () => (
   <Card>
