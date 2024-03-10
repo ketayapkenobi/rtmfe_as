@@ -43,7 +43,7 @@ function ProjectDetails() {
 
     return (
         <div>
-            <h2>{project.projectName}</h2>
+            <h2>{project.projectName} ({project.projectID})</h2>
             <p>{project.projectDesc}</p>
             <ProjectNavbar handleMenuItemClick={handleMenuItemClick} />
             {content}
