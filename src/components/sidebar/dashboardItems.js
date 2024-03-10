@@ -50,6 +50,13 @@ const pagesSection = [
     title: "Projects",
     // badge: "5",
   },
+  {
+    // Sidebar project sementara
+    href: "/pages/team-members",
+    icon: Users,
+    title: "Team Members",
+    // badge: "5",
+  },
   // {
   //   href: "/pages",
   //   icon: Layout,

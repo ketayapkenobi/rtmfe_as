@@ -70,7 +70,7 @@ const ProfileDetails = () => {
               height="128"
             />
             <Card.Title className="mb-0">{user.name}</Card.Title>
-            <div className="text-muted mb-2">Lead Developer</div>
+            <div className="text-muted mb-2">{user.role}</div>
             <div>
               <Button size="sm" variant="primary" className="me-1">
                 Follow

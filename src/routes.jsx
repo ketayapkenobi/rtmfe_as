@@ -9,7 +9,12 @@ import LandingLayout from "./layouts/Landing";
 
 // Guards
 import AuthGuard from "./components/guards/AuthGuard";
+
+// Projects 
 import ProjectDetails from "./components/projects/ProjectDetails";
+
+// Users
+import Users from "./components/users/Users";
 
 // Landing
 const Landing = lazy(() => import("./pages/landing/Landing"));
@@ -116,6 +121,7 @@ const ProtectedPage = lazy(() => import("./pages/protected/ProtectedPage"));
 const routes = [
   {
     path: "/",
+
     element: <LandingLayout />,
     children: [
       {
@@ -193,6 +199,10 @@ const routes = [
       {
         path: "project/:id",
         element: <ProjectDetails />,
+      },
+      {
+        path: "team-members",
+        element: <Users />,
       },
     ],
   },

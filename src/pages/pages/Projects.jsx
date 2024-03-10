@@ -17,10 +17,28 @@ function Projects() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/projects')
-      .then(response => response.json())
-      .then(data => setProjects(data))
-      .catch(error => console.error('Error:', error));
+    const fetchProjects = async () => {
+      const authToken = localStorage.getItem('token');
+      try {
+        const response = await fetch('http://localhost:8000/api/projects', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setProjects(data);
+        } else {
+          console.error('Failed to fetch projects');
+        }
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   const handleClose = () => {
