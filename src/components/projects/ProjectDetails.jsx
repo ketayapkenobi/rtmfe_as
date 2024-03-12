@@ -2,16 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import ProjectNavbar from './ProjectNavbar';
 import RequirementSpreadsheet from './RequirementSpreadsheet';
+import { Card, ListGroup } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 function ProjectDetails() {
     const { id } = useParams();
     const [project, setProject] = useState(null);
     const [selectedMenuItem, setSelectedMenuItem] = useState(null);
+    const [teamMembers, setTeamMembers] = useState([]);
+    const [showTeamMembers, setShowTeamMembers] = useState(false);
 
     useEffect(() => {
         fetch(`http://localhost:8000/api/projects/${id}`)
             .then(response => response.json())
             .then(data => setProject(data))
+            .catch(error => console.error('Error:', error));
+
+        fetch(`http://localhost:8000/api/projects/${id}/members`)
+            .then(response => response.json())
+            .then(data => setTeamMembers(data.members))
             .catch(error => console.error('Error:', error));
     }, [id]);
 
@@ -45,6 +55,18 @@ function ProjectDetails() {
         <div>
             <h2>{project.projectName} ({project.projectID})</h2>
             <p>{project.projectDesc}</p>
+            <Card>
+                <Card.Header as="h5" onClick={() => setShowTeamMembers(!showTeamMembers)} style={{ cursor: 'pointer' }}>
+                    Team Members <FontAwesomeIcon icon={faChevronDown} />
+                </Card.Header>
+                {showTeamMembers && (
+                    <ListGroup variant="flush" style={{ marginTop: '10px' }}> {/* Adjust the margin top as needed */}
+                        {teamMembers.map(member => (
+                            <ListGroup.Item key={member.id}>{member.name}</ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                )}
+            </Card>
             <ProjectNavbar handleMenuItemClick={handleMenuItemClick} />
             {content}
         </div>

@@ -111,7 +111,7 @@ function Projects() {
             <Card>
               {project.image && <Card.Img src={project.image} alt="Card image cap" />}
               <Card.Header className="px-4 pt-4">
-                <Card.Title className="mb-0">{project.projectName} {project.projectID}</Card.Title>
+                <Card.Title className="mb-0">{project.projectName}</Card.Title>
                 <Badge className="my-2" bg="primary">
                   {project.state}
                 </Badge>

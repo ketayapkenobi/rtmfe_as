@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 
 const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
@@ -6,6 +6,25 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
     const [projectName, setProjectName] = useState('');
     const [projectDesc, setProjectDesc] = useState('');
     const [error, setError] = useState('');
+    const [users, setUsers] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+
+    useEffect(() => {
+        fetch(`http://localhost:8000/api/users`)
+            .then(response => response.json())
+            .then(data => setUsers(data.users))
+            .catch(error => console.error('Error:', error));
+    }, []);
+
+    const handleUserCheckboxChange = (userId) => {
+        setSelectedUsers(prevSelectedUsers => {
+            if (prevSelectedUsers.includes(userId)) {
+                return prevSelectedUsers.filter(id => id !== userId);
+            } else {
+                return [...prevSelectedUsers, userId];
+            }
+        });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -26,7 +45,7 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ projectID, projectName, projectDesc }),
+                        body: JSON.stringify({ projectID, projectName, projectDesc, selectedUsers }),
                     });
                 }
             })
@@ -36,10 +55,12 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
                 setProjectID('');
                 setProjectName('');
                 setProjectDesc('');
+                setSelectedUsers([]);
                 handleClose();
             })
             .catch(error => setError(error.message));
     };
+
 
     return (
         <Modal show={show} onHide={handleClose}>
@@ -79,6 +100,21 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
                             onChange={(e) => setProjectDesc(e.target.value)}
                             required
                         />
+                    </Form.Group>
+                    <Form.Group controlId="formSelectedUsers">
+                        <Form.Label>Assign users to this project:</Form.Label>
+                        <div>
+                            {users.map(user => (
+                                <Form.Check
+                                    key={user.id}
+                                    type="checkbox"
+                                    label={user.name}
+                                    checked={selectedUsers.includes(user.id)}
+                                    onChange={() => handleUserCheckboxChange(user.id)}
+                                    style={{ marginRight: '10px' }} // Add some spacing between checkboxes
+                                />
+                            ))}
+                        </div>
                     </Form.Group>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
