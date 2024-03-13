@@ -5,6 +5,7 @@ import RequirementSpreadsheet from './RequirementSpreadsheet';
 import { Card, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { PulseLoader } from 'react-spinners'; // Import the PulseLoader component
 
 function ProjectDetails() {
     const { id } = useParams();
@@ -26,7 +27,11 @@ function ProjectDetails() {
     }, [id]);
 
     if (!project) {
-        return <div>Loading...</div>;
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <PulseLoader color="#007bff" size={15} margin={5} />
+            </div>
+        );
     }
 
     const handleMenuItemClick = (menuItem) => {
@@ -36,7 +41,7 @@ function ProjectDetails() {
     let content = null;
     switch (selectedMenuItem) {
         case 'Requirements':
-            content = <RequirementSpreadsheet requirement={project.requirement} />;
+            content = <RequirementSpreadsheet projectID={project.projectID} />;
             break;
         case 'Test Cases':
             content = <p>This is the test cases of the project</p>;
@@ -60,7 +65,7 @@ function ProjectDetails() {
                     Team Members <FontAwesomeIcon icon={faChevronDown} />
                 </Card.Header>
                 {showTeamMembers && (
-                    <ListGroup variant="flush" style={{ marginTop: '10px' }}> {/* Adjust the margin top as needed */}
+                    <ListGroup variant="flush" style={{ marginTop: '10px' }}>
                         {teamMembers.map(member => (
                             <ListGroup.Item key={member.id}>{member.name}</ListGroup.Item>
                         ))}
