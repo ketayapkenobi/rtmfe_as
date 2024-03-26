@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import ProjectNavbar from './ProjectNavbar';
 import RequirementSpreadsheet from './RequirementSpreadsheet';
+import TestCaseSpreadsheet from './TestCaseSpreadsheet';
 import { Card, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -44,7 +45,7 @@ function ProjectDetails() {
             content = <RequirementSpreadsheet projectID={project.projectID} />;
             break;
         case 'Test Cases':
-            content = <p>This is the test cases of the project</p>;
+            content = <TestCaseSpreadsheet projectID={project.projectID} />;
             break;
         case 'Test Plans':
             content = <p>This is the test plans of the project</p>;

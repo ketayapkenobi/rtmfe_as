@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPencil } from '@fortawesome/free-solid-svg-icons';
 
 function RequirementSpreadsheet({ projectID }) {
     const [rows, setRows] = useState([]);
@@ -26,6 +26,23 @@ function RequirementSpreadsheet({ projectID }) {
             status: ''
         })));
 
+        // Fetch requirements
+        fetch(`http://localhost:8000/api/projects/${projectID}/requirements`)
+            .then(response => response.json())
+            .then(data => {
+                // Update the rows with fetched requirements
+                setRows(data.requirements.map((requirement, index) => ({
+                    id: index + 1,
+                    requirementId: requirement.requirementID,
+                    requirementName: requirement.name,
+                    description: requirement.description,
+                    priority: requirement.priority_name,
+                    testCases: requirement.testCases,
+                    status: requirement.status_name
+                })));
+            })
+            .catch(error => console.error('Error:', error));
+
         // Fetch priorities
         fetch('http://localhost:8000/api/priority')
             .then(response => response.json())
@@ -40,47 +57,108 @@ function RequirementSpreadsheet({ projectID }) {
     }, [projectID]);
 
     const handleInputChange = (e, rowId, field) => {
+        // console.log('Row ID:', rowId);
         const { value } = e.target;
         setRows(prevRows =>
             prevRows.map(row =>
                 row.id === rowId ? { ...row, [field]: value } : row
             )
         );
-
-        // Wait for the state to update and then calculate the tallest cell height
-        setTimeout(() => {
-            const currentRow = e.target.parentNode.parentNode;
-            const cells = currentRow.querySelectorAll('td textarea');
-            const tallestCellHeight = Math.max(...Array.from(cells).map(cell => cell.scrollHeight));
-
-            // Set the minimum height to the default height
-            const minHeight = defaultHeight;
-            const newHeight = tallestCellHeight > minHeight ? tallestCellHeight : minHeight;
-
-            // Apply the new height to all cells in the current row
-            cells.forEach(cell => cell.style.height = `${newHeight}px`);
-
-            // Reset the height to default if the value is empty
-            if (value.trim() === '') {
-                cells.forEach(cell => cell.style.height = `${defaultHeight}px`);
-            }
-        }, 0);
     };
+
+    const priorityMap = {
+        'High': 1,
+        'Medium': 2,
+        'Low': 3
+    };
+
+    const statusMap = {
+        'To Do': 1,
+        'In Progress': 2,
+        'Done': 3
+    };
+
+    const handleTickClick = (rowId) => {
+        const row = rows.find((r) => r.id === rowId);
+        if (!row) return;
+
+        const requirementID = row.requirementId;
+        if (!requirementID) {
+            console.error('Requirement ID is empty');
+            return;
+        }
+
+        // Check if the requirement ID already exists
+        fetch(`http://localhost:8000/api/requirements/check/${requirementID}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    // If the requirement ID exists, update the requirement
+                    fetch(`http://localhost:8000/api/requirements/${requirementID}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            requirementID: requirementID,
+                            name: row.requirementName,
+                            description: row.description,
+                            priority_id: priorityMap[row.priority],
+                            status_id: statusMap[row.status],
+                            project_id: projectID,
+                        }),
+                    })
+                        .then(() => {
+                            alert('Requirement updated successfully');
+                        })
+                        .catch(error => console.error('Error updating requirement:', error));
+                } else {
+                    // If the requirement ID doesn't exist, proceed with creating the requirement
+                    fetch('http://localhost:8000/api/requirements', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            requirementID: requirementID,
+                            name: row.requirementName,
+                            description: row.description,
+                            priority_id: priorityMap[row.priority],
+                            status_id: statusMap[row.status],
+                            project_id: projectID,
+                        }),
+                    })
+                        .then(response => response.json())
+                        .then(() => {
+                            // Update the rows with the newly created requirement
+                            setRows(prevRows =>
+                                prevRows.map(r =>
+                                    r.id === rowId ? { ...r, requirementId: requirementID } : r
+                                )
+                            );
+                            alert('Requirement created successfully');
+                        })
+                        .catch(error => console.error('Error creating requirement:', error));
+                }
+            })
+            .catch(error => console.error('Error checking requirement ID:', error));
+    };
+
+
 
     const addRow = () => {
-        setRows(prevRows => [
-            ...prevRows,
-            {
-                id: prevRows.length + 1,
-                requirementId: projectID ? `${projectID}-R${prevRows.length + 1}` : '',
-                requirementName: '',
-                description: '',
-                priority: '',
-                testCases: '',
-                status: ''
-            }
-        ]);
+        const newRow = {
+            id: rows.length + 1,
+            requirementId: projectID ? `${projectID}-R${rows.length + 1}` : '',
+            requirementName: '',
+            description: '',
+            priority: '',
+            testCases: '',
+            status: ''
+        };
+        setRows(prevRows => [...prevRows, newRow]);
     };
+
 
     const getPriorityColor = (priority) => {
         switch (priority) {
@@ -120,6 +198,8 @@ function RequirementSpreadsheet({ projectID }) {
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Test Cases</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Test Priority</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Status</th>
+                        <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Action</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -129,7 +209,13 @@ function RequirementSpreadsheet({ projectID }) {
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>{row.requirementId}</td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}><textarea value={row.requirementName} onChange={e => handleInputChange(e, row.id, 'requirementName')} style={{ resize: 'none', overflow: 'hidden', minHeight: `${defaultHeight}px`, width: '100%', border: 'none', outline: 'none' }} /></td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}><textarea value={row.description} onChange={e => handleInputChange(e, row.id, 'description')} style={{ resize: 'none', overflow: 'hidden', width: '100%', border: 'none', outline: 'none' }} /></td>
-                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}><textarea value={row.testCases} onChange={e => handleInputChange(e, row.id, 'testCases')} style={{ resize: 'none', overflow: 'hidden', minHeight: `${defaultHeight}px`, width: '100%', border: 'none', outline: 'none' }} /></td>
+                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
+                                {(Array.isArray(row.testCases) ? row.testCases.join(',') : row.testCases)
+                                    .split(',')
+                                    .map((testCase, index) => (
+                                        <button key={index} style={{ borderRadius: '20px', padding: '5px 10px', marginRight: '5px', marginBottom: '5px', backgroundColor: '#f0f0f0', border: '1px solid #ccc', cursor: 'pointer' }}>{testCase}</button>
+                                    ))}
+                            </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
                                 <select value={row.priority} onChange={e => handleInputChange(e, row.id, 'priority')} style={{ borderRadius: '5px', padding: '5px', border: '1px solid #ccc', backgroundColor: '#f7f7f7', ...getPriorityColor(row.priority) }}>
                                     <option value="">Select Priority</option>
@@ -145,6 +231,11 @@ function RequirementSpreadsheet({ projectID }) {
                                         <option key={status.id} value={status.name} style={{ color: 'black', backgroundColor: getStatusColor(status.name).backgroundColor }}>{status.name}</option>
                                     ))}
                                 </select>
+                            </td>
+                            <td style={{ textAlign: 'center', padding: '10px' }}>
+                                <button onClick={() => handleTickClick(row.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#333', fontSize: '1.5em', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#f0f0f0', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+                                    <FontAwesomeIcon icon={faPencil} />
+                                </button>
                             </td>
                         </tr>
                     ))}

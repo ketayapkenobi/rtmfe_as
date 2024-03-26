@@ -15,30 +15,47 @@ function Projects() {
   const [editProject, setEditProject] = useState(null);
   const [deleteProject, setDeleteProject] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchData = async () => {
       const authToken = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost:8000/api/projects', {
+        // Fetch current user role
+        const userResponse = await fetch('http://localhost:8000/api/current-user', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
           },
         });
-        if (response.ok) {
-          const data = await response.json();
-          setProjects(data);
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUserRole(userData.role);
+        } else {
+          console.error('Failed to fetch current user');
+        }
+
+        // Fetch projects
+        const projectsResponse = await fetch('http://localhost:8000/api/projects', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          setProjects(projectsData);
         } else {
           console.error('Failed to fetch projects');
         }
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchProjects();
+    fetchData();
   }, []);
 
   const handleClose = () => {
@@ -100,7 +117,7 @@ function Projects() {
 
   return (
     <Container fluid className="p-0">
-      <Button variant="primary" className="float-end mt-n1" onClick={handleShow}>
+      <Button variant="primary" className="float-end mt-n1" onClick={handleShow} style={{ display: userRole === 'Project Manager' ? 'block' : 'none' }}>
         <FontAwesomeIcon icon={faPlus} /> New project
       </Button>
       <h1 className="h3 mb-3">Projects</h1>
