@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPencil } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function RequirementSpreadsheet({ projectID }) {
     const [rows, setRows] = useState([]);
@@ -109,7 +111,7 @@ function RequirementSpreadsheet({ projectID }) {
                         }),
                     })
                         .then(() => {
-                            alert('Requirement updated successfully');
+                            toast.success('Requirement updated successfully');
                         })
                         .catch(error => console.error('Error updating requirement:', error));
                 } else {
@@ -136,7 +138,7 @@ function RequirementSpreadsheet({ projectID }) {
                                     r.id === rowId ? { ...r, requirementId: requirementID } : r
                                 )
                             );
-                            alert('Requirement created successfully');
+                            toast.success('Requirement created successfully');
                         })
                         .catch(error => console.error('Error creating requirement:', error));
                 }
@@ -188,6 +190,7 @@ function RequirementSpreadsheet({ projectID }) {
 
     return (
         <div>
+            <ToastContainer />
             <table style={{ borderCollapse: 'collapse', width: '100%', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
                 <thead style={{ backgroundColor: '#007bff', color: 'white' }}>
                     <tr style={{ backgroundColor: '#f8f9fa', color: '#212529' }}>

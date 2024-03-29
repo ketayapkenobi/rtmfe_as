@@ -12,43 +12,49 @@ import {
   MapPin,
   Users,
   Share,
+  File,
 } from "react-feather";
 
 const pagesSection = [
-  // {
-  //   href: "/dashboard",
-  //   icon: Sliders,
-  //   title: "Dashboards",
-  //   badge: "5",
-  //   children: [
-  //     {
-  //       href: "/dashboard/default",
-  //       title: "Default",
-  //     },
-  //     {
-  //       href: "/dashboard/analytics",
-  //       title: "Analytics",
-  //     },
-  //     {
-  //       href: "/dashboard/saas",
-  //       title: "SaaS",
-  //     },
-  //     {
-  //       href: "/dashboard/social",
-  //       title: "Social",
-  //     },
-  //     {
-  //       href: "/dashboard/crypto",
-  //       title: "Crypto",
-  //     },
-  //   ],
-  // },
+  {
+    href: "/dashboard",
+    icon: Sliders,
+    title: "Dashboards",
+    // badge: "5",
+    // children: [
+    //   {
+    //     href: "/dashboard/default",
+    //     title: "Default",
+    //   },
+    //   {
+    //     href: "/dashboard/analytics",
+    //     title: "Analytics",
+    //   },
+    //   {
+    //     href: "/dashboard/saas",
+    //     title: "SaaS",
+    //   },
+    //   {
+    //     href: "/dashboard/social",
+    //     title: "Social",
+    //   },
+    //   {
+    //     href: "/dashboard/crypto",
+    //     title: "Crypto",
+    //   },
+    // ],
+  },
   {
     // Sidebar project sementara
     href: "/pages/projects",
     icon: Layout,
     title: "Projects",
     // badge: "5",
+  },
+  {
+    href: "/pages/report",
+    icon: File,
+    title: "Report",
   },
   {
     // Sidebar project sementara

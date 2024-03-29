@@ -36,6 +36,7 @@ const Pricing = lazy(() => import("./pages/pages/Pricing"));
 const Tasks = lazy(() => import("./pages/pages/Tasks"));
 const Chat = lazy(() => import("./pages/pages/Chat"));
 const Blank = lazy(() => import("./pages/pages/Blank"));
+const Report = lazy(() => import("./pages/pages/Report"));
 
 // Auth
 const Page500 = lazy(() => import("./pages/auth/Page500"));
@@ -203,6 +204,10 @@ const routes = [
       {
         path: "team-members",
         element: <Users />,
+      },
+      {
+        path: "report",
+        element: <Report />,
       },
     ],
   },

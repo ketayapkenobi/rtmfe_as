@@ -1,47 +1,119 @@
-import React, { useState } from 'react';
-import { Modal, Button, Table, Form } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect } from 'react';
+import { Form, Modal, Button, Table } from 'react-bootstrap';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
 
-function TestCaseSteps({ show, handleClose, handleAddSteps }) {
-    const [steps, setSteps] = useState([
-        { id: 1, action: '', input: '', expectedResult: '' }
-    ]);
+function TestCaseSteps({ show, handleClose, testcaseID }) {
+    const [steps, setSteps] = useState([]);
+    const [newStep, setNewStep] = useState({
+        action: '',
+        input: '',
+        expected_result: ''
+    });
+    const [editStep, setEditStep] = useState(null);
 
-    const handleAdd = () => {
-        setSteps(prevSteps => [
-            ...prevSteps,
-            { id: prevSteps.length + 1, action: '', input: '', expectedResult: '' }
-        ]);
+    const handleEditStep = (index) => {
+        setEditStep(index);
     };
 
-    const handleRemove = (id) => {
-        setSteps(prevSteps => prevSteps.filter(step => step.id !== id));
-    };
-
-    const handleInputChange = (e, id, field) => {
+    const handleEditChange = (e, stepIndex, fieldName) => {
         const { value } = e.target;
-        setSteps(prevSteps =>
-            prevSteps.map(step =>
-                step.id === id ? { ...step, [field]: value } : step
-            )
-        );
+        setSteps(prevSteps => {
+            const updatedSteps = [...prevSteps];
+            const editedStep = { ...updatedSteps[stepIndex], [fieldName]: value };
+            updatedSteps[stepIndex] = editedStep;
+            return updatedSteps;
+        });
     };
 
-    const handleAddAllSteps = () => {
-        steps.forEach(step => {
-            if (step.action.trim() !== '' && step.input.trim() !== '' && step.expectedResult.trim() !== '') {
-                handleAddSteps(step);
-            }
-        });
-        handleClose();
-        setSteps([{ id: 1, action: '', input: '', expectedResult: '' }]);
+    useEffect(() => {
+        if (!testcaseID) return;
+
+        fetch(`http://localhost:8000/api/steps/${testcaseID}`)
+            .then(response => response.json())
+            .then(data => {
+                setSteps(data || []); // Assuming data is an array
+            })
+            .catch(error => console.error('Error fetching steps:', error));
+    }, [testcaseID]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewStep(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleAddStep = () => {
+        const stepOrder = steps.length + 1;
+
+        fetch(`http://localhost:8000/api/steps`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                testcase_id: testcaseID,
+                step_order: stepOrder,
+                ...newStep
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                setSteps([...steps, data]);
+                setNewStep({
+                    action: '',
+                    input: '',
+                    expected_result: ''
+                });
+            })
+            .catch(error => console.error('Error adding step:', error));
+    };
+
+    const handleSaveEdit = (step, stepOrder) => {
+        console.log('Step order:', stepOrder);
+        console.log('Test case ID:', testcaseID);
+
+        const editedStep = steps[editStep]; // Access the correct step using editStep
+
+        const requestData = {
+            testcase_id: testcaseID,
+            action: editedStep.action,
+            input: editedStep.input,
+            expected_result: editedStep.expected_result,
+            step_order: stepOrder
+        };
+
+        console.log('Data being sent to update API:', requestData);
+
+        fetch(`http://localhost:8000/api/steps/${testcaseID}/${stepOrder}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                const updatedSteps = steps.map((s, index) => {
+                    if (index === editStep) {
+                        return {
+                            ...s,
+                            ...editedStep
+                        };
+                    }
+                    return s;
+                });
+                setSteps(updatedSteps);
+                setEditStep(null); // Exit edit mode
+            })
+            .catch(error => console.error('Error updating step:', error));
     };
 
     return (
         <Modal show={show} onHide={handleClose} size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>Add Steps</Modal.Title>
+                <Modal.Title>Test Case Steps - {testcaseID}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Table striped bordered hover>
@@ -55,25 +127,97 @@ function TestCaseSteps({ show, handleClose, handleAddSteps }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {steps.map(step => (
-                            <tr key={step.id}>
-                                <td>{step.id}</td>
-                                <td><Form.Control type="text" value={step.action} onChange={(e) => handleInputChange(e, step.id, 'action')} /></td>
-                                <td><Form.Control type="text" value={step.input} onChange={(e) => handleInputChange(e, step.id, 'input')} /></td>
-                                <td><Form.Control type="text" value={step.expectedResult} onChange={(e) => handleInputChange(e, step.id, 'expectedResult')} /></td>
-                                <td><Button variant="danger" onClick={() => handleRemove(step.id)}>Remove</Button></td>
+                        {steps.map((step, index) => (
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{editStep === index ? (
+                                    <Form.Control
+                                        type="text"
+                                        value={step.action}
+                                        onChange={(e) => handleEditChange(e, index, 'action')}
+                                    />
+                                ) : (
+                                    step.action
+                                )}</td>
+                                <td>{editStep === index ? (
+                                    <Form.Control
+                                        type="text"
+                                        value={step.input}
+                                        onChange={(e) => handleEditChange(e, index, 'input')}
+                                    />
+                                ) : (
+                                    step.input
+                                )}</td>
+                                <td>{editStep === index ? (
+                                    <Form.Control
+                                        type="text"
+                                        value={step.expected_result}
+                                        onChange={(e) => handleEditChange(e, index, 'expected_result')}
+                                    />
+                                ) : (
+                                    step.expected_result
+                                )}</td>
+                                <td>{editStep === index ? (
+                                    <Button variant="success" onClick={() => handleSaveEdit(step, step.step_order)}>Save</Button>
+                                ) : (
+                                    <Button variant="primary" onClick={() => handleEditStep(index)}>Edit</Button>
+                                )}</td>
                             </tr>
                         ))}
                     </tbody>
                 </Table>
-                <Button variant="primary" onClick={handleAdd}>Add Row</Button>
+                <h4>Add New Step:</h4>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Input</th>
+                            <th>Expected Result</th>
+                            <th></th> {/* Empty column for the Add button */}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Enter action"
+                                    name="action"
+                                    value={newStep.action}
+                                    onChange={handleInputChange}
+                                />
+                            </td>
+                            <td>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Enter input"
+                                    name="input"
+                                    value={newStep.input}
+                                    onChange={handleInputChange}
+                                />
+                            </td>
+                            <td>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Enter expected result"
+                                    name="expected_result"
+                                    value={newStep.expected_result}
+                                    onChange={handleInputChange}
+                                />
+                            </td>
+                            <td>
+                                <Button variant="primary" onClick={handleAddStep}>
+                                    Add Step
+                                </Button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </Table>
+
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
                     Close
-                </Button>
-                <Button variant="primary" onClick={handleAddAllSteps}>
-                    Add All Steps
                 </Button>
             </Modal.Footer>
         </Modal>

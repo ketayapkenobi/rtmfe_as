@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPencil, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { Button } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import TestCaseSteps from './TestCaseSteps';
 import RelateRequirementsModal from './RelateRequirementsModal';
+
 
 function TestCasesSpreadsheet({ projectID }) {
     const [rows, setRows] = useState([]);
@@ -174,7 +177,7 @@ function TestCasesSpreadsheet({ projectID }) {
                         }),
                     })
                         .then(() => {
-                            alert('Test case updated successfully');
+                            toast.success('Test case updated successfully');
                             relateRequirements(testcaseID, requirementIDs);
                         })
                         .catch(error => console.error('Error updating test case:', error));
@@ -196,7 +199,7 @@ function TestCasesSpreadsheet({ projectID }) {
                     })
                         .then(response => response.json())
                         .then(() => {
-                            alert('Test Case created successfully');
+                            toast.success('Test Case created successfully');
                             relateRequirements(testcaseID, requirementIDs);
                         })
                         .catch(error => console.error('Error creating test case:', error));
@@ -246,7 +249,8 @@ function TestCasesSpreadsheet({ projectID }) {
         ]);
     };
 
-    const handleAddSteps = ({ stepNumber, description }) => {
+    const handleAddSteps = (testCaseId) => {
+        setSelectedTestCaseID(testCaseId);
         setShowStepsModal(true);
     };
 
@@ -278,6 +282,7 @@ function TestCasesSpreadsheet({ projectID }) {
 
     return (
         <div>
+            <ToastContainer />
             <table style={{ borderCollapse: 'collapse', width: '100%', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
                 <thead style={{ backgroundColor: '#007bff', color: 'white' }}>
                     <tr style={{ backgroundColor: '#f8f9fa', color: '#212529' }}>
@@ -302,9 +307,31 @@ function TestCasesSpreadsheet({ projectID }) {
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6', position: 'relative', minHeight: `${defaultHeight}px` }}>
                                 <div style={{ position: 'relative' }}>
                                     <textarea value={row.steps} onChange={e => handleInputChange(e, row.id, 'steps')} style={{ resize: 'none', overflow: 'hidden', width: '100%', border: 'none', outline: 'none', pointerEvents: 'none', backgroundColor: '#f7f7f7', color: '#212529', minHeight: `${defaultHeight}px` }} />
-                                    <Button variant="outline-primary" onClick={() => handleAddSteps(row)} style={{ position: 'absolute', bottom: '5px', left: '50%', transform: 'translateX(-50%)', padding: '5px 10px', fontSize: '14px', lineHeight: '1.5', borderRadius: '4px', color: '#007bff', border: '1px solid #007bff' }}>
-                                        Add Steps
+                                    <Button
+                                        variant="outline-primary"
+                                        onClick={() => handleAddSteps(row.testCaseId)}
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '5px',
+                                            left: '50%',
+                                            transform: 'translateX(-50%)',
+                                            padding: '10px 20px',
+                                            fontSize: '16px',
+                                            // fontWeight: 'bold',
+                                            lineHeight: '1.5',
+                                            borderRadius: '25px',
+                                            color: '##000000',
+                                            background: '#aed9e0', // pastel blue
+                                            border: 'none',
+                                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
+                                            cursor: 'pointer',
+                                            transition: 'background 0.3s, transform 0.3s',
+                                        }}
+                                    >
+                                        Steps
                                     </Button>
+
+
                                 </div>
                             </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
@@ -352,6 +379,7 @@ function TestCasesSpreadsheet({ projectID }) {
                     show={showStepsModal}
                     handleClose={() => setShowStepsModal(false)}
                     handleAddSteps={handleAddSteps}
+                    testcaseID={selectedTestCaseID}
                 />
             )}
             {showRequirementsModal && (
