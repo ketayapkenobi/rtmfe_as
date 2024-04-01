@@ -88,6 +88,7 @@ function TestPlan({ projectID }) {
                     <Card.Body>
                         <Card.Title>{testPlan.name} - {testPlan.testplanID} </Card.Title>
                         <Card.Text>{testPlan.description}</Card.Text>
+                        <Card.Text><strong>Number of Execution: </strong>{testPlan.execution_count}</Card.Text>
                         <Card.Text><strong>Priority:</strong> {testPlan.priority_name}</Card.Text>
                         <Card.Text><strong>Status:</strong> {testPlan.status_name}</Card.Text>
                         <Button variant="primary" onClick={() => handleShowRelatedTestCases(testPlan.testplanID)} style={{ marginRight: '5px' }}>Test Cases</Button>

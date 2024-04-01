@@ -4,6 +4,7 @@ import ProjectNavbar from './ProjectNavbar';
 import RequirementSpreadsheet from './RequirementSpreadsheet';
 import TestCaseSpreadsheet from './TestCaseSpreadsheet';
 import TestPlan from './TestPlan';
+import TestExecution from './TestExecution';
 import { Card, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -51,7 +52,7 @@ function ProjectDetails() {
         case 'Test Plans':
             content = <TestPlan projectID={project.projectID} />; break;
         case 'Test Executions':
-            content = <p>This is the test executions of the project</p>;
+            content = <TestExecution projectID={project.projectID} />;
             break;
         default:
             content = null;
