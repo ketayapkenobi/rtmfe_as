@@ -37,7 +37,7 @@ function SignIn() {
           localStorage.setItem("token", response.data.token);
 
           // Redirect to private route
-          navigate("/dashboard");
+          navigate("/pages/projects");
         } catch (error) {
           const message = error.response.data.error || "Something went wrong";
 
@@ -106,18 +106,18 @@ function SignIn() {
               </Form.Control.Feedback>
             )}
             <small>
-              <Link to="/auth/reset-password">Forgot password?</Link>
+              {/* <Link to="/auth/reset-password">Forgot password?</Link> */}
             </small>
           </Form.Group>
 
-          <div>
+          {/* <div>
             <Form.Check
-              type="checkbox"
-              id="rememberMe"
-              label="Remember me next time"
-              defaultChecked
+            // type="checkbox"
+            // id="rememberMe"
+            // label="Remember me next time"
+            // defaultChecked
             />
-          </div>
+          </div> */}
 
           <div className="text-center mt-3">
             <Button

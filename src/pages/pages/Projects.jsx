@@ -32,23 +32,36 @@ function Projects() {
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setUserRole(userData.role);
+
+          let projectsResponse;
+          if (userData.role === 'Project Manager') {
+            // Fetch all projects for project managers
+            projectsResponse = await fetch('http://localhost:8000/api/projects', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+              },
+            });
+          } else {
+            // Fetch projects for the current user
+            projectsResponse = await fetch(`http://localhost:8000/api/projects/current-user/${userData.userID}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+              },
+            });
+          }
+
+          if (projectsResponse.ok) {
+            const projectsData = await projectsResponse.json();
+            setProjects(projectsData);
+          } else {
+            console.error('Failed to fetch projects');
+          }
         } else {
           console.error('Failed to fetch current user');
-        }
-
-        // Fetch projects
-        const projectsResponse = await fetch('http://localhost:8000/api/projects', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        if (projectsResponse.ok) {
-          const projectsData = await projectsResponse.json();
-          setProjects(projectsData);
-        } else {
-          console.error('Failed to fetch projects');
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -57,6 +70,7 @@ function Projects() {
 
     fetchData();
   }, []);
+
 
   const handleClose = () => {
     setShowModal(false);
@@ -146,13 +160,18 @@ function Projects() {
               </ListGroup>
               <Card.Footer className="text-center">
                 <Link to={`/pages/project/${project.id}`} className="btn btn-primary me-2">View</Link>
-                <Button variant="warning" className="me-2" onClick={() => handleOpenEditModal(project)}>
-                  <FontAwesomeIcon icon={faEdit} /> Edit
-                </Button>
-                <Button variant="danger" onClick={() => handleDeleteProject(project)}>
-                  <FontAwesomeIcon icon={faTrash} /> Delete
-                </Button>
+                {userRole === 'Project Manager' && (
+                  <>
+                    <Button variant="warning" className="me-2" onClick={() => handleOpenEditModal(project)}>
+                      <FontAwesomeIcon icon={faEdit} /> Edit
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDeleteProject(project)}>
+                      <FontAwesomeIcon icon={faTrash} /> Delete
+                    </Button>
+                  </>
+                )}
               </Card.Footer>
+
             </Card>
           </Col>
         ))}

@@ -10,8 +10,21 @@ function Users() {
     const usersPerPage = 10;
     const [showModal, setShowModal] = useState(false);
     const [roles, setRoles] = useState([]); // State to store roles
+    const [userRole, setUserRole] = useState(null); // State to store user's role
 
     useEffect(() => {
+        const authToken = localStorage.getItem('token');
+        fetch('http://localhost:8000/api/current-user', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+            },
+        })
+            .then(response => response.json())
+            .then(data => setUserRole(data.role))
+            .catch(error => console.error('Error:', error));
+
         fetch('http://localhost:8000/api/users')
             .then(response => response.json())
             .then(data => setUsers(data.users))
@@ -47,9 +60,11 @@ function Users() {
 
     return (
         <Container fluid className="p-0">
-            <Button variant="primary" className="float-end mt-n1" onClick={handleShow}>
-                <FontAwesomeIcon icon={faUserPlus} /> New team member
-            </Button>
+            {userRole === 'Project Manager' && (
+                <Button variant="primary" className="float-end mt-n1" onClick={handleShow}>
+                    <FontAwesomeIcon icon={faUserPlus} /> New team member
+                </Button>
+            )}
             <h1 className="h3 mb-3">Team Members</h1>
 
             <ListGroup>
@@ -63,21 +78,21 @@ function Users() {
                                     <p style={{ marginBottom: '0.5rem' }}>{user.role_name}</p>
                                     <p style={{ marginBottom: '0.5rem' }}>User ID: {user.userID}</p>
                                 </div>
-                                <div>
-                                    <Button variant="warning" className="me-2">
-                                        <FontAwesomeIcon icon={faEdit} /> Edit
-                                    </Button>
-                                    <Button variant="danger">
-                                        <FontAwesomeIcon icon={faTrash} /> Delete
-                                    </Button>
-                                </div>
+                                {userRole === 'Project Manager' && (
+                                    <div>
+                                        <Button variant="warning" className="me-2">
+                                            <FontAwesomeIcon icon={faEdit} /> Edit
+                                        </Button>
+                                        <Button variant="danger">
+                                            <FontAwesomeIcon icon={faTrash} /> Delete
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         </ListGroup.Item>
                     );
                 })}
             </ListGroup>
-
-
 
             <Pagination>
                 {Array.from({ length: Math.ceil(users.length / usersPerPage) }).map((_, index) => (

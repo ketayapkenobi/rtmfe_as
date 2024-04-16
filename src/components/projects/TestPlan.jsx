@@ -69,6 +69,23 @@ function TestPlan({ projectID }) {
             .catch(error => console.error('Error:', error));
     };
 
+    const handleExecuteTestPlan = (testplanID) => {
+        console.log(testplanID);
+        fetch(`http://localhost:8000/api/testplans/${testplanID}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Test plan executed successfully:', data);
+                // Optionally, you can update the UI or show a message
+            })
+            .catch(error => console.error('Error:', error));
+    };
+
     return (
         <div>
             <h3>Test Plans</h3>
@@ -93,6 +110,7 @@ function TestPlan({ projectID }) {
                         <Card.Text><strong>Status:</strong> {testPlan.status_name}</Card.Text>
                         <Button variant="primary" onClick={() => handleShowRelatedTestCases(testPlan.testplanID)} style={{ marginRight: '5px' }}>Test Cases</Button>
                         <Button variant="danger" onClick={() => handleDeleteTestPlan(testPlan.id)}>Delete</Button>
+                        <Button variant="success" onClick={() => handleExecuteTestPlan(testPlan.testplanID)} style={{ marginLeft: '5px' }}>Execute</Button>
                     </Card.Body>
                 </Card>
             ))}

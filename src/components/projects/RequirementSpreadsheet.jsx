@@ -9,13 +9,27 @@ function RequirementSpreadsheet({ projectID }) {
     const [defaultHeight, setDefaultHeight] = useState(0);
     const [priorities, setPriorities] = useState([]);
     const [statuses, setStatuses] = useState([]);
+    const [userRole, setUserRole] = useState('');
 
     useEffect(() => {
+        const authToken = localStorage.getItem('token');
         // Get the default height of the textarea
         const textarea = document.createElement('textarea');
         document.body.appendChild(textarea);
         setDefaultHeight(textarea.scrollHeight);
         document.body.removeChild(textarea);
+
+        // Fetch current user's role
+        fetch('http://localhost:8000/api/current-user', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+            }
+        })
+            .then(response => response.json())
+            .then(data => setUserRole(data.role))
+            .catch(error => console.error('Error fetching current user role:', error));
 
         // Generate initial rows based on projectID
         setRows(Array.from({ length: 3 }, (_, index) => ({
@@ -59,7 +73,8 @@ function RequirementSpreadsheet({ projectID }) {
     }, [projectID]);
 
     const handleInputChange = (e, rowId, field) => {
-        // console.log('Row ID:', rowId);
+        if (userRole === 'Client') return; // Check user's role and return if Client
+
         const { value } = e.target;
         setRows(prevRows =>
             prevRows.map(row =>
@@ -146,8 +161,6 @@ function RequirementSpreadsheet({ projectID }) {
             .catch(error => console.error('Error checking requirement ID:', error));
     };
 
-
-
     const addRow = () => {
         const newRow = {
             id: rows.length + 1,
@@ -202,7 +215,6 @@ function RequirementSpreadsheet({ projectID }) {
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Test Priority</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Status</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Action</th>
-
                     </tr>
                 </thead>
                 <tbody>
@@ -210,8 +222,28 @@ function RequirementSpreadsheet({ projectID }) {
                         <tr key={row.id} style={{ backgroundColor: '#fff', color: '#212529', borderBottom: '1px solid #dee2e6' }}>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>{row.id}</td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>{row.requirementId}</td>
-                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}><textarea value={row.requirementName} onChange={e => handleInputChange(e, row.id, 'requirementName')} style={{ resize: 'none', overflow: 'hidden', minHeight: `${defaultHeight}px`, width: '100%', border: 'none', outline: 'none' }} /></td>
-                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}><textarea value={row.description} onChange={e => handleInputChange(e, row.id, 'description')} style={{ resize: 'none', overflow: 'hidden', width: '100%', border: 'none', outline: 'none' }} /></td>
+                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
+                                <textarea
+                                    value={row.requirementName}
+                                    onChange={e => handleInputChange(e, row.id, 'requirementName')}
+                                    disabled={userRole === 'Client'}
+                                    style={{
+                                        resize: 'none', overflow: 'hidden', minHeight: `${defaultHeight}px`,
+                                        width: '100%', border: 'none', outline: 'none', backgroundColor: userRole === 'Client' ? '#f0f0f0' : 'transparent'
+                                    }}
+                                />
+                            </td>
+                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
+                                <textarea
+                                    value={row.description}
+                                    onChange={e => handleInputChange(e, row.id, 'description')}
+                                    disabled={userRole === 'Client'}
+                                    style={{
+                                        resize: 'none', overflow: 'hidden', width: '100%', border: 'none', outline: 'none',
+                                        backgroundColor: userRole === 'Client' ? '#f0f0f0' : 'transparent'
+                                    }}
+                                />
+                            </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
                                 {(Array.isArray(row.testCases) ? row.testCases.join(',') : row.testCases)
                                     .split(',')
@@ -220,7 +252,15 @@ function RequirementSpreadsheet({ projectID }) {
                                     ))}
                             </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
-                                <select value={row.priority} onChange={e => handleInputChange(e, row.id, 'priority')} style={{ borderRadius: '5px', padding: '5px', border: '1px solid #ccc', backgroundColor: '#f7f7f7', ...getPriorityColor(row.priority) }}>
+                                <select
+                                    value={row.priority}
+                                    onChange={e => handleInputChange(e, row.id, 'priority')}
+                                    disabled={userRole === 'Client'}
+                                    style={{
+                                        borderRadius: '5px', padding: '5px', border: '1px solid #ccc',
+                                        backgroundColor: userRole === 'Client' ? '#f0f0f0' : '#f7f7f7', ...getPriorityColor(row.priority)
+                                    }}
+                                >
                                     <option value="">Select Priority</option>
                                     {priorities.map(priority => (
                                         <option key={priority.id} value={priority.name} style={{ color: 'black', backgroundColor: getPriorityColor(priority.name).backgroundColor }}>{priority.name}</option>
@@ -228,7 +268,15 @@ function RequirementSpreadsheet({ projectID }) {
                                 </select>
                             </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
-                                <select value={row.status} onChange={e => handleInputChange(e, row.id, 'status')} style={{ borderRadius: '5px', padding: '5px', border: '1px solid #ccc', backgroundColor: '#f7f7f7', ...getStatusColor(row.status) }}>
+                                <select
+                                    value={row.status}
+                                    onChange={e => handleInputChange(e, row.id, 'status')}
+                                    disabled={userRole === 'Client'}
+                                    style={{
+                                        borderRadius: '5px', padding: '5px', border: '1px solid #ccc',
+                                        backgroundColor: userRole === 'Client' ? '#f0f0f0' : '#f7f7f7', ...getStatusColor(row.status)
+                                    }}
+                                >
                                     <option value="">Select Status</option>
                                     {statuses.map(status => (
                                         <option key={status.id} value={status.name} style={{ color: 'black', backgroundColor: getStatusColor(status.name).backgroundColor }}>{status.name}</option>
@@ -236,9 +284,11 @@ function RequirementSpreadsheet({ projectID }) {
                                 </select>
                             </td>
                             <td style={{ textAlign: 'center', padding: '10px' }}>
-                                <button onClick={() => handleTickClick(row.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#333', fontSize: '1.5em', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#f0f0f0', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
-                                    <FontAwesomeIcon icon={faPencil} />
-                                </button>
+                                {userRole !== 'Client' && (
+                                    <button onClick={() => handleTickClick(row.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#333', fontSize: '1.5em', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#f0f0f0', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+                                        <FontAwesomeIcon icon={faPencil} />
+                                    </button>
+                                )}
                             </td>
                         </tr>
                     ))}

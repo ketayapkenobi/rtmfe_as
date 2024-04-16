@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Dropdown } from "react-bootstrap";
-import { PieChart, Settings, User } from "react-feather";
-import avatar1 from "../../assets/img/avatars/avatar.jpg";
+import { Settings, User } from "react-feather";
+import { faUser } from "@fortawesome/free-solid-svg-icons"; // Import faUser icon
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Import FontAwesomeIcon
 
 const NavbarUser = () => {
   const navigate = useNavigate();
@@ -70,11 +71,7 @@ const NavbarUser = () => {
       </span>
       <span className="d-none d-sm-inline-block">
         <Dropdown.Toggle as="a" className="nav-link">
-          <img
-            src={avatar1}
-            className="avatar img-fluid rounded-circle me-1"
-            alt="Chris Wood"
-          />
+          <FontAwesomeIcon icon={faUser} style={{ fontSize: '16px' }} className="align-middle me-1" />
           <span className="text-dark">{userName}</span>
         </Dropdown.Toggle>
       </span>
@@ -84,12 +81,10 @@ const NavbarUser = () => {
           Profile
         </Dropdown.Item>
         <Dropdown.Item>
-          <PieChart size={18} className="align-middle me-2" />
-          Analytics
+          <Settings size={18} className="align-middle me-2" />
+          Settings
         </Dropdown.Item>
         <Dropdown.Divider />
-        <Dropdown.Item>Settings & Privacy</Dropdown.Item>
-        <Dropdown.Item>Help</Dropdown.Item>
         <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>

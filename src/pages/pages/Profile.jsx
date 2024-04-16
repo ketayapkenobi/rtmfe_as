@@ -62,23 +62,23 @@ const ProfileDetails = () => {
       <Card.Body className="text-center">
         {user ? (
           <>
-            <img
+            {/* <img
               src={avatar4}
               alt="Stacie Hall"
               className="img-fluid rounded-circle mb-2"
               width="128"
               height="128"
-            />
+            /> */}
             <Card.Title className="mb-0">{user.name}</Card.Title>
             <div className="text-muted mb-2">{user.role}</div>
-            <div>
+            {/* <div>
               <Button size="sm" variant="primary" className="me-1">
                 Follow
               </Button>
               <Button size="sm" variant="primary">
                 <MessageSquare width={16} height={16} /> Message
               </Button>
-            </div>
+            </div> */}
           </>
         ) : (
           <p>Loading...</p>
@@ -87,7 +87,7 @@ const ProfileDetails = () => {
 
       <hr className="my-0" />
 
-      <Card.Body>
+      {/* <Card.Body>
         <Card.Title>Skills</Card.Title>
         <Badge bg="primary" className="me-2 my-1">
           HTML
@@ -116,10 +116,10 @@ const ProfileDetails = () => {
         <Badge bg="primary" className="me-2 my-1">
           UX
         </Badge>
-      </Card.Body>
+      </Card.Body> */}
 
       <hr className="my-0" />
-      <Card.Body>
+      {/* <Card.Body>
         <Card.Title>About</Card.Title>
         <ul className="list-unstyled mb-0">
           <li className="mb-1">
@@ -136,9 +136,9 @@ const ProfileDetails = () => {
             <Link to="/dashboard/default">Boston</Link>
           </li>
         </ul>
-      </Card.Body>
+      </Card.Body> */}
       <hr className="my-0" />
-      <Card.Body>
+      {/* <Card.Body>
         <Card.Title>Elsewhere</Card.Title>
 
         <ul className="list-unstyled mb-0">
@@ -163,7 +163,7 @@ const ProfileDetails = () => {
             <Link to="/dashboard/default">LinkedIn</Link>
           </li>
         </ul>
-      </Card.Body>
+      </Card.Body> */}
     </Card>
   );
 };
