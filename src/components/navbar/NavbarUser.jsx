@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 
 import { Dropdown } from "react-bootstrap";
 import { Settings, User } from "react-feather";
-import { faUser } from "@fortawesome/free-solid-svg-icons"; // Import faUser icon
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Import FontAwesomeIcon
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const NavbarUser = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -24,6 +25,7 @@ const NavbarUser = () => {
         if (response.ok) {
           const user = await response.json();
           setUserName(user.name);
+          setUserRole(user.role); // Set user's role
         } else {
           console.error("Failed to fetch user data");
         }
@@ -46,10 +48,9 @@ const NavbarUser = () => {
         },
       });
       if (response.ok) {
-        // Remove the token from localStorage on successful logout
         localStorage.removeItem('authToken');
         console.log("Logged out successfully");
-        navigate("/auth/sign-in"); // Redirect to sign-in page
+        navigate("/auth/sign-in");
       } else {
         console.error("Failed to logout");
       }
@@ -72,7 +73,7 @@ const NavbarUser = () => {
       <span className="d-none d-sm-inline-block">
         <Dropdown.Toggle as="a" className="nav-link">
           <FontAwesomeIcon icon={faUser} style={{ fontSize: '16px' }} className="align-middle me-1" />
-          <span className="text-dark">{userName}</span>
+          <span className="text-dark">{userName} ({userRole})</span> {/* Display user's role */}
         </Dropdown.Toggle>
       </span>
       <Dropdown.Menu drop="end">

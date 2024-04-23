@@ -10,6 +10,7 @@ function RequirementSpreadsheet({ projectID }) {
     const [priorities, setPriorities] = useState([]);
     const [statuses, setStatuses] = useState([]);
     const [userRole, setUserRole] = useState('');
+    const [editedRows, setEditedRows] = useState([]);
 
     useEffect(() => {
         const authToken = localStorage.getItem('token');
@@ -81,6 +82,15 @@ function RequirementSpreadsheet({ projectID }) {
                 row.id === rowId ? { ...row, [field]: value } : row
             )
         );
+
+        // Check if the row is already marked as edited
+        if (!editedRows.includes(rowId)) {
+            setEditedRows([...editedRows, rowId]);
+        }
+    };
+
+    const isRowEdited = (rowId) => {
+        return editedRows.includes(rowId);
     };
 
     const priorityMap = {
@@ -127,6 +137,8 @@ function RequirementSpreadsheet({ projectID }) {
                     })
                         .then(() => {
                             toast.success('Requirement updated successfully');
+                            // Remove the row ID from the editedRows state
+                            setEditedRows(prevEditedRows => prevEditedRows.filter(id => id !== rowId));
                         })
                         .catch(error => console.error('Error updating requirement:', error));
                 } else {
@@ -154,12 +166,20 @@ function RequirementSpreadsheet({ projectID }) {
                                 )
                             );
                             toast.success('Requirement created successfully');
+                            // Change the color of the button to blue
+                            setRows(prevRows =>
+                                prevRows.map(r =>
+                                    r.id === rowId ? { ...r, isNew: true } : r
+                                )
+                            );
                         })
                         .catch(error => console.error('Error creating requirement:', error));
                 }
             })
             .catch(error => console.error('Error checking requirement ID:', error));
     };
+
+
 
     const addRow = () => {
         const newRow = {
@@ -172,6 +192,9 @@ function RequirementSpreadsheet({ projectID }) {
             status: ''
         };
         setRows(prevRows => [...prevRows, newRow]);
+
+        // Mark the newly added row as edited
+        setEditedRows([...editedRows, newRow.id]);
     };
 
 
@@ -285,7 +308,20 @@ function RequirementSpreadsheet({ projectID }) {
                             </td>
                             <td style={{ textAlign: 'center', padding: '10px' }}>
                                 {userRole !== 'Client' && (
-                                    <button onClick={() => handleTickClick(row.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#333', fontSize: '1.5em', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#f0f0f0', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+                                    <button
+                                        onClick={() => handleTickClick(row.id)}
+                                        style={{
+                                            border: 'none',
+                                            background: 'none',
+                                            cursor: 'pointer',
+                                            color: isRowEdited(row.id) ? 'orange' : '#007bff',
+                                            fontSize: '1.5em',
+                                            padding: '5px 10px',
+                                            borderRadius: '5px',
+                                            backgroundColor: '#f0f0f0',
+                                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                        }}
+                                    >
                                         <FontAwesomeIcon icon={faPencil} />
                                     </button>
                                 )}
