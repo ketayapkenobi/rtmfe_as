@@ -9,6 +9,7 @@ import { faPencil } from '@fortawesome/free-solid-svg-icons';
 function TestExecution({ projectID }) {
     const [testExecutions, setTestExecutions] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
+    const [progress, setProgress] = useState([]);
 
     useEffect(() => {
         fetch(`http://localhost:8000/api/projects/${projectID}/testexecutions`)
@@ -26,6 +27,28 @@ function TestExecution({ projectID }) {
             .then(data => setCurrentUser(data))
             .catch(error => console.error('Error:', error));
     }, [projectID]);
+
+    useEffect(() => {
+        if (testExecutions.length > 0) {
+            testExecutions.forEach(testExecution => {
+                fetch(`http://localhost:8000/api/testexecutions/${testExecution.testexecutionID}/progress`)
+                    .then(response => response.json())
+                    .then(data => {
+                        setProgress(prevProgress => {
+                            const updatedProgress = [...prevProgress];
+                            const existingProgressIndex = updatedProgress.findIndex(progressData => progressData.testexecutionID === testExecution.testexecutionID);
+                            if (existingProgressIndex !== -1) {
+                                updatedProgress[existingProgressIndex] = { testexecutionID: testExecution.testexecutionID, progress: data.progress, total_percentage: data.total_percentage };
+                            } else {
+                                updatedProgress.push({ testexecutionID: testExecution.testexecutionID, progress: data.progress, total_percentage: data.total_percentage });
+                            }
+                            return updatedProgress;
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        }
+    }, [testExecutions]);
 
     const getResultText = (resultId) => {
         switch (resultId) {
@@ -55,6 +78,15 @@ function TestExecution({ projectID }) {
         { id: 6, text: 'Passed with Restriction', color: '#F3F0D2' }
     ];
 
+    const progressBarColors = {
+        1: '#808080', // Grey color for "To Do"
+        2: '#3498db ', // In Progress
+        3: '#27ae60 ', // Pass
+        4: '#e74c3c ', // Fail
+        5: '#9b59b6 ', // Blocked
+        6: '#f39c12 ', // Passed with Restriction
+    };
+
     const handleResultChange = (index, newValue) => {
         setTestExecutions(prevExecutions => {
             const updatedExecutions = [...prevExecutions];
@@ -64,8 +96,7 @@ function TestExecution({ projectID }) {
     };
 
     const handleSave = (testexecutionID, stepID, updatedStep) => {
-        console.log(stepID);
-        fetch(`http://localhost:8000/api/testexecutions/${stepID}`, {
+        fetch(`http://localhost:8000/api/testexecutions/${testexecutionID}/${stepID}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -87,7 +118,24 @@ function TestExecution({ projectID }) {
                 console.log('Test result updated successfully:', data);
                 // Display success toast
                 toast.success('Test result updated successfully');
-                // Optionally, update the UI to reflect the changes
+
+                // Update progress bar with current data
+                fetch(`http://localhost:8000/api/testexecutions/${testexecutionID}/progress`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const { progress, total_percentage } = data;
+                        setProgress(prevProgress => {
+                            const updatedProgress = [...prevProgress];
+                            const existingProgressIndex = updatedProgress.findIndex(progressData => progressData.testexecutionID === testexecutionID);
+                            if (existingProgressIndex !== -1) {
+                                updatedProgress[existingProgressIndex] = { testexecutionID: testexecutionID, progress: progress, total_percentage: total_percentage };
+                            } else {
+                                updatedProgress.push({ testexecutionID: testexecutionID, progress: progress, total_percentage: total_percentage });
+                            }
+                            return updatedProgress;
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -95,7 +143,6 @@ function TestExecution({ projectID }) {
                 toast.error('Error updating test result');
             });
     };
-
 
     useEffect(() => {
         console.log('Current User:', currentUser);
@@ -125,6 +172,31 @@ function TestExecution({ projectID }) {
                                 ))}
                             </Form.Select>
                             <br />
+                            <strong>Progress:</strong>
+                            {progress
+                                .filter(progressData => progressData.testexecutionID === testExecution.testexecutionID)
+                                .map(progressData => (
+                                    <div key={progressData.testexecutionID}>
+                                        <div>Total Progress: {progressData.total_percentage.toFixed(2)}%</div>
+                                        <div className="progress" style={{ height: '20px', marginTop: '5px' }}>
+                                            {progressData.progress.map(progressItem => (
+                                                <div
+                                                    key={progressItem.result_id}
+                                                    className="progress-bar"
+                                                    role="progressbar"
+                                                    style={{
+                                                        width: `${progressItem.percentage}%`,
+                                                        backgroundColor: progressBarColors[progressItem.result_id] || '#000000', // Default color if result_id not found
+                                                        color: 'black'
+                                                    }}
+                                                    aria-valuenow={progressItem.percentage}
+                                                    aria-valuemin={0}
+                                                    aria-valuemax={100}
+                                                ></div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
                             <strong>Number of Execution:</strong> {testExecution.number_of_execution}<br />
                             <Accordion>
                                 {Object.keys(testExecution.testcase_id).map(testcaseID => (
@@ -207,7 +279,10 @@ function TestExecution({ projectID }) {
                                                                         border: 'none', // Ensure no border is applied
                                                                         outline: 'none', // Ensure no outline is applied
                                                                     }}
-                                                                    onClick={() => handleSave(testExecution.testexecutionID, step.step_id, step)}
+                                                                    onClick={() => {
+                                                                        console.log('Test Execution ID:', testExecution.testexecutionID);
+                                                                        handleSave(testExecution.testexecutionID, step.step_id, step);
+                                                                    }}
                                                                 >
                                                                     <FontAwesomeIcon icon={faPencil} />
                                                                 </button>
@@ -223,8 +298,9 @@ function TestExecution({ projectID }) {
                         </Card.Text>
                     </Card.Body>
                 </Card>
-            ))}
-        </div>
+            ))
+            }
+        </div >
     );
 }
 

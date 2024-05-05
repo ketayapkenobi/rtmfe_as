@@ -385,10 +385,10 @@ const navItems = [
   //   title: "Tools & Components",
   //   pages: componentsSection,
   // },
-  // {
-  //   title: "Plugins & Addons",
-  //   pages: pluginsSection,
-  // },
+  {
+    title: "Plugins & Addons",
+    pages: pluginsSection,
+  },
 ];
 
 export default navItems;
