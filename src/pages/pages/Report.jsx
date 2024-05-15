@@ -2,8 +2,9 @@
 import React, { useState } from "react";
 import { Container, Nav } from "react-bootstrap";
 import GeneralReport from "../../components/projects/GeneralReport";
-import CoverageReport from "../../components/projects/CoverageReport";
+import TE_GenerateReport from "../../components/projects/TE_GenerateReport";
 import RTMPage from "../../components/projects/RTM";
+import CoverageReport from "../../components/projects/CoverageReport";
 
 const Report = () => {
     const [activeTab, setActiveTab] = useState("General Report");
@@ -23,7 +24,10 @@ const Report = () => {
                         <button className={`nav-link btn btn-link text-dark ${activeTab === 'Requirement Traceability Matrix' ? 'active' : ''}`} style={{ boxShadow: activeTab === 'Requirement Traceability Matrix' ? '0px 2px 0px 0px #007bff' : '', backgroundColor: activeTab === 'Requirement Traceability Matrix' ? 'lightblue' : 'rgba(173, 216, 230, 0.5)', marginRight: '10px', padding: '10px 20px', borderRadius: '5px' }} onClick={() => handleTabChange('Requirement Traceability Matrix')}>Requirement Traceability Matrix</button>
                     </li>
                     <li className="nav-item">
-                        <button className={`nav-link btn btn-link text-dark ${activeTab === 'Coverage' ? 'active' : ''}`} style={{ boxShadow: activeTab === 'Coverage' ? '0px 2px 0px 0px #007bff' : '', backgroundColor: activeTab === 'Coverage' ? 'lightblue' : 'rgba(173, 216, 230, 0.5)', marginRight: '10px', padding: '10px 20px', borderRadius: '5px' }} onClick={() => handleTabChange('Coverage')}>Test Executions</button>
+                        <button className={`nav-link btn btn-link text-dark ${activeTab === 'Test Executions' ? 'active' : ''}`} style={{ boxShadow: activeTab === 'Test Executions' ? '0px 2px 0px 0px #007bff' : '', backgroundColor: activeTab === 'Test Executions' ? 'lightblue' : 'rgba(173, 216, 230, 0.5)', marginRight: '10px', padding: '10px 20px', borderRadius: '5px' }} onClick={() => handleTabChange('Test Executions')}>Test Executions</button>
+                    </li>
+                    <li className="nav-item">
+                        <button className={`nav-link btn btn-link text-dark ${activeTab === 'Coverage Report' ? 'active' : ''}`} style={{ boxShadow: activeTab === 'Coverage Report' ? '0px 2px 0px 0px #007bff' : '', backgroundColor: activeTab === 'Coverage Report' ? 'lightblue' : 'rgba(173, 216, 230, 0.5)', marginRight: '10px', padding: '10px 20px', borderRadius: '5px' }} onClick={() => handleTabChange('Coverage Report')}>Coverage Report</button>
                     </li>
                 </ul>
             </Nav>
@@ -31,7 +35,8 @@ const Report = () => {
             <Container className="mt-4">
                 {activeTab === "General Report" && <GeneralReport />}
                 {activeTab === "Requirement Traceability Matrix" && <RTMPage />}
-                {activeTab === "Coverage" && <CoverageReport />}
+                {activeTab === "Test Executions" && <TE_GenerateReport />}
+                {activeTab === "Coverage Report" && <CoverageReport />}
             </Container>
         </Container>
     );
