@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
 import usePalette from "../../hooks/usePalette";
 import TestExecutionPieChart from "./TestExecutionPieChart";
 import TestPlanBarChart from "./TestPlanBarChart";
-
 
 const TE_GenerateReport = () => {
     const [projects, setProjects] = useState([]);
@@ -144,9 +143,11 @@ const TE_GenerateReport = () => {
             fetchProgress(selectedTestExecution);
             setLoading(false);
             setReportComponent(null);
+            setTestExecutionsProgress([]); // Clear test plan progress data
         } else if (selectedProject && selectedTestPlan) {
             fetchTestExecutionsForTestPlan(selectedTestPlan);
-            setProgressData(null);
+            setProgressData(null); // Clear test execution progress data
+            setShowChart(false);
         } else {
             alert("Please select a project and either a test execution or a test plan.");
         }
@@ -211,6 +212,8 @@ const TE_GenerateReport = () => {
                         legendLabels={legendLabels}
                         getBackgroundColor={getBackgroundColor}
                         palette={palette}
+                        projectID={selectedProject}
+                        selectedTestExecution={selectedTestExecution}
                     />
                 )}
                 {testExecutionsProgress && testExecutionsProgress.length > 0 && (

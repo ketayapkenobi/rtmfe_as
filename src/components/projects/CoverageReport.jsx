@@ -32,6 +32,7 @@ const CoverageReport = () => {
 
     const handleReportTypeChange = (event) => {
         setSelectedReportType(event.target.value);
+        setGeneratedReport(null); // Reset generated report when report type changes
     };
 
     const handleGenerateReport = () => {
@@ -77,7 +78,6 @@ const CoverageReport = () => {
                                         <option value="requirements">Requirements</option>
                                         <option value="testcases">Test Cases</option>
                                         <option value="testplans">Test Plans</option>
-                                        <option value="testexecutions">Test Executions</option>
                                     </Form.Control>
                                 </Form.Group>
                             </Col>
@@ -88,7 +88,7 @@ const CoverageReport = () => {
                     </Form>
                 </Col>
             </Row>
-            {generatedReport && (
+            {selectedReportType && generatedReport && (
                 <Container className="mt-4">
                     {selectedReportType === "requirements" && (
                         <RequirementsCoverageReport generatedReport={generatedReport} />
@@ -99,9 +99,6 @@ const CoverageReport = () => {
                     {selectedReportType === "testplans" && (
                         <TestPlansCoverageReport generatedReport={generatedReport} />
                     )}
-                    {selectedReportType === "testexecutions" && (
-                        <TestExecutionsReport generatedReport={generatedReport} />
-                    )}
                 </Container>
             )}
         </Container>
@@ -109,3 +106,4 @@ const CoverageReport = () => {
 };
 
 export default CoverageReport;
+

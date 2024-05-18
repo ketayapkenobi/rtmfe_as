@@ -38,6 +38,35 @@ const TestPlansReport = ({ generatedReport }) => {
         html2pdf().from(clonedCardRef).set(opt).save();
     };
 
+    const handleExportCSV = () => {
+        if (!generatedReport || !generatedReport.testplans) {
+            return;
+        }
+
+        const headers = ["Test Plan ID", "Name", "Description", "Priority", "Status", "Test Cases"];
+        const rows = generatedReport.testplans.map(testplan => [
+            testplan.testplanID,
+            testplan.name,
+            testplan.description,
+            getPriorityName(testplan.priority_id),
+            getStatusName(testplan.status_id),
+            testplan.test_cases ? testplan.test_cases.join(", ") : ""
+        ]);
+
+        const csvContent = [
+            headers.join(","),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+        ].join("\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", "RequirementsReport.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const toggleSort = (field) => {
         if (sortBy === field) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -156,7 +185,10 @@ const TestPlansReport = ({ generatedReport }) => {
                         ))}
                     </tbody>
                 </Table>
-                <Button onClick={handleExportPDF}>Export PDF</Button>
+                <div className="d-flex justify-content-end mt-3">
+                    <Button onClick={handleExportPDF} className="me-2">Export PDF</Button>
+                    <Button onClick={handleExportCSV}>Export CSV</Button>
+                </div>
             </Card.Body>
         </Card>
     );

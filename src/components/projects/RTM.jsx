@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { Col, Container, Row, Form, Button, Table, Card } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faLink } from '@fortawesome/free-solid-svg-icons'; // Add any other icons you need
+import html2pdf from "html2pdf.js";
 
 const RTMPage = () => {
     const [projects, setProjects] = useState([]);
@@ -14,6 +15,8 @@ const RTMPage = () => {
     const [testPlans, setTestPlans] = useState([]);
     const [testExecutions, setTestExecutions] = useState([]);
     const [tableData, setTableData] = useState([]);
+    const [isTableGenerated, setIsTableGenerated] = useState(false);
+    const cardRef = useRef(null);
 
     useEffect(() => {
         fetchProjects();
@@ -151,16 +154,16 @@ const RTMPage = () => {
 
         switch (selectedYaxis) {
             case "requirements":
-                rowData = requirements.map((req) => req.requirementID);
+                rowData = requirements.map((req) => `${req.requirementID} - ${req.name}`);
                 break;
             case "testcases":
-                rowData = testCases.map((testCase) => testCase.testcaseID);
+                rowData = testCases.map((testCase) => `${testCase.testcaseID} - ${testCase.name}`);
                 break;
             case "testplans":
-                rowData = testPlans.map((testPlan) => testPlan.testplanID);
+                rowData = testPlans.map((testPlan) => `${testPlan.testplanID} - ${testPlan.name}`);
                 break;
             case "testexecutions":
-                rowData = testExecutions.map((testExecution) => testExecution.testexecutionID);
+                rowData = testExecutions.map((testExecution) => `${testExecution.testexecutionID} - ${testExecution.name}`);
                 break;
             default:
                 console.error("Invalid selection for row data.");
@@ -169,16 +172,16 @@ const RTMPage = () => {
 
         switch (selectedXaxis) {
             case "requirements":
-                columnData = requirements.map((req) => req.requirementID);
+                columnData = requirements.map((req) => `${req.requirementID} - ${req.name}`);
                 break;
             case "testcases":
-                columnData = testCases.map((testCase) => testCase.testcaseID);
+                columnData = testCases.map((testCase) => `${testCase.testcaseID} - ${testCase.name}`);
                 break;
             case "testplans":
-                columnData = testPlans.map((testPlan) => testPlan.testplanID);
+                columnData = testPlans.map((testPlan) => `${testPlan.testplanID} - ${testPlan.name}`);
                 break;
             case "testexecutions":
-                columnData = testExecutions.map((testExecution) => testExecution.testexecutionID);
+                columnData = testExecutions.map((testExecution) => `${testExecution.testexecutionID} - ${testExecution.name}`);
                 break;
             default:
                 console.error("Invalid selection for column data.");
@@ -186,179 +189,249 @@ const RTMPage = () => {
         }
 
         const data = [
-            ["", ...columnData], // Header row
-            ...rowData.map((rowItem) => {
-                return [
-                    rowItem,
-                    ...columnData.map((columnItem) => {
+            ["", ...columnData, "Total"], // Header row
+            ...rowData.map((rowItem, rowIndex) => {
+                const [rowId, rowName] = rowItem.split(' - '); // Split the rowItem by ' - '
+                let total = 0;
+                const row = [
+                    `${rowId} - ${rowName}`, // Include both ID and name
+                    ...columnData.map((columnItem, columnIndex) => {
+                        const [columnId, columnName] = columnItem.split(' - '); // Split the columnItem by ' - '
                         let relationship = "";
                         switch (selectedYaxis) {
                             case "requirements":
-                                const req = requirements.find((r) => r.requirementID === rowItem);
+                                const req = requirements.find((r) => r.requirementID === rowId);
                                 if (req) {
                                     switch (selectedXaxis) {
                                         case "testcases":
-                                            relationship = req.testCases.includes(columnItem) ? <FontAwesomeIcon icon={faLink} /> : "";
+                                            relationship = req.testCases.includes(columnId)
+                                                ? 'X'
+                                                : "";
                                             break;
                                         case "testplans":
-                                            // Implement logic for requirements and test plans relationship
+                                            relationship = req.testPlans.includes(columnId)
+                                                ? 'X'
+                                                : "";
                                             break;
-                                        case "testexecutions":
-                                            // Implement logic for requirements and test executions relationship
-                                            break;
+                                        // case "testexecutions":
+                                        //     relationship = req.testExecutions.includes(columnId)
+                                        //         ? 'X'
+                                        //         : "";
+                                        //     break;
                                         default:
                                             break;
                                     }
                                 }
                                 break;
                             case "testcases":
-                                const testCase = testCases.find((r) => r.testcaseID === rowItem);
+                                const testCase = testCases.find((r) => r.testcaseID === rowId);
                                 if (testCase) {
                                     switch (selectedXaxis) {
                                         case "requirements":
-                                            relationship = testCase.requirements.includes(columnItem) ? <FontAwesomeIcon icon={faLink} /> : "";
+                                            relationship = testCase.requirements.includes(columnId)
+                                                ? 'X'
+                                                : "";
                                             break;
                                         case "testplans":
-                                            // Implement logic for requirements and test plans relationship
+                                            relationship = testCase.testplans.includes(columnId)
+                                                ? 'X'
+                                                : "";
                                             break;
-                                        case "testexecutions":
-                                            // Implement logic for requirements and test executions relationship
-                                            break;
+                                        // case "testexecutions":
+                                        //     relationship = testCase.testExecutions.includes(columnId)
+                                        //         ? 'X'
+                                        //         : "";
+                                        //     break;
                                         default:
                                             break;
                                     }
                                 }
                                 break;
                             case "testplans":
-                                const testPlan = testPlans.find((r) => r.testplanID === rowItem);
+                                const testPlan = testPlans.find((r) => r.testplanID === rowId);
                                 if (testPlan) {
                                     switch (selectedXaxis) {
                                         case "requirements":
-                                            //
+                                            relationship = testPlan.requirements.includes(columnId)
+                                                ? 'X'
+                                                : "";
                                             break;
                                         case "testcases":
-                                            //
+                                            relationship = testPlan.testcases.includes(columnId)
+                                                ? 'X'
+                                                : "";
                                             break;
-                                        case "testexecutions":
-                                            // Implement logic for requirements and test executions relationship
-                                            break;
+                                        // case "testexecutions":
+                                        //     // Implement logic for test plans and test executions relationship
+                                        //     break;
                                         default:
                                             break;
                                     }
                                 }
                                 break;
-                            case "testexecutions":
-                                const testExecution = testExecutions.find((r) => r.testexecutionID === rowItem);
-                                if (testExecution) {
-                                    switch (selectedXaxis) {
-                                        case "requirements":
-                                            //
-                                            break;
-                                        case "testcases":
-                                            //
-                                            break;
-                                        case "testplans":
-                                            // 
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                                break;
-                            // Implement logic for other combinations of row and column types
+                            // case "testexecutions":
+                            //     const testExecution = testExecutions.find((r) => r.testexecutionID === rowId);
+                            //     if (testExecution) {
+                            //         switch (selectedXaxis) {
+                            //             case "requirements":
+                            //                 //
+                            //                 break;
+                            //             case "testcases":
+                            //                 //
+                            //                 break;
+                            //             case "testplans":
+                            //                 // Implement logic for test executions and test plans relationship
+                            //                 break;
+                            //             default:
+                            //                 break;
+                            //         }
+                            //     }
+                            //     break;
+                            // Implement logic for other row types as needed
                             default:
                                 break;
                         }
+                        total += relationship ? 1 : 0;
                         return relationship;
-                    })
+                    }),
+                    total,
                 ];
-            })
+                return row;
+            }),
         ];
+
+        // Calculate and add totals for each column
+        const columnTotals = Array(columnData.length).fill(0);
+        data.slice(1).forEach((row) => {
+            row.slice(1, -1).forEach((relationship, index) => {
+                if (relationship) {
+                    columnTotals[index]++;
+                }
+            });
+        });
+
+        data.push(["Total", ...columnTotals, ""]); // Add totals row
+
+        setIsTableGenerated(true);
         setTableData(data);
     };
 
+    const exportToPDF = () => {
+        const cardElement = cardRef.current;
+        if (cardElement) {
+            const opt = {
+                margin: 1,
+                filename: "RTM_Report.pdf",
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: "in", format: "letter", orientation: "landscape" },
+            };
+
+            html2pdf().from(cardElement).set(opt).save();
+        }
+    };
+
+    const exportToCSV = () => {
+        const rows = tableData.map(row => row.join(','));
+        const csv = rows.join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'RTM_Report.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
     return (
-        <Container fluid className="p-0">
-            <Helmet title="Requirement Traceability Matrix" />
-            <h1 className="h3 mb-3">Requirement Traceability Matrix</h1>
+        <Container>
+            <Helmet>
+                <title>Requirement Traceability Matrix</title>
+            </Helmet>
+            <h1>Requirement Traceability Matrix</h1>
             <Row>
-                <Col md="10" xl="8" className="mx-auto">
-                    <Form>
-                        <Row>
-                            <Col>
-                                <Form.Group controlId="projectSelect">
-                                    <Form.Label>Select Project:</Form.Label>
-                                    <Form.Control as="select" onChange={handleProjectChange} value={selectedProject}>
-                                        <option value="">Select a project...</option>
-                                        {projects.map((project) => (
-                                            <option key={project.id} value={project.projectID}>
-                                                {project.projectID}
-                                            </option>
-                                        ))}
-                                    </Form.Control>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Form.Group controlId="YaxisSelect">
-                                    <Form.Label>Select Type for Column:</Form.Label>
-                                    <Form.Control as="select" onChange={handleYaxisChange} value={selectedYaxis}>
-                                        <option value="">Select type for column...</option>
-                                        <option value="requirements">Requirements</option>
-                                        <option value="testcases">Test Cases</option>
-                                        <option value="testplans">Test Plans</option>
-                                        <option value="testexecutions">Test Executions</option>
-                                    </Form.Control>
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group controlId="XaxisSelect">
-                                    <Form.Label>Select Type for Row:</Form.Label>
-                                    <Form.Control as="select" onChange={handleXaxisChange} value={selectedXaxis}>
-                                        <option value="">Select type for row...</option>
-                                        <option value="requirements">Requirements</option>
-                                        <option value="testcases">Test Cases</option>
-                                        <option value="testplans">Test Plans</option>
-                                        <option value="testexecutions">Test Executions</option>
-                                    </Form.Control>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Button variant="primary" className="mt-3" onClick={handleGenerateReport}>
-                            {"Generate Report"}
-                        </Button>
-                    </Form>
+                <Col md={6}>
+                    <Form.Group controlId="projectSelect">
+                        <Form.Label>Project</Form.Label>
+                        <Form.Control as="select" value={selectedProject} onChange={handleProjectChange}>
+                            <option value="">Select a project</option>
+                            {projects.map((project) => (
+                                <option key={project.projectID} value={project.projectID}>
+                                    {project.projectName}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
                 </Col>
-                {tableData.length > 0 && (
-                    <Card className="mt-3">
-                        <Card.Body>
-                            {tableData.length > 0 && (
-                                <Table striped bordered hover className="mt-4">
-                                    <thead>
-                                        <tr>
-                                            {tableData[0].map((header, index) => (
-                                                <th key={index}>{header}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {tableData.slice(1).map((row, rowIndex) => (
-                                            <tr key={rowIndex}>
-                                                {row.map((cell, cellIndex) => (
-                                                    <td key={cellIndex} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                                        {cell}
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </Table>
-                            )}
-                        </Card.Body>
-                    </Card>
-                )}
+                <Col md={3}>
+                    <Form.Group controlId="yAxisSelect">
+                        <Form.Label>Row</Form.Label>
+                        <Form.Control as="select" value={selectedYaxis} onChange={handleYaxisChange}>
+                            <option value="">Select row type</option>
+                            <option value="requirements">Requirements</option>
+                            <option value="testcases">Test Cases</option>
+                            <option value="testplans">Test Plans</option>
+                            {/* <option value="testexecutions">Test Executions</option> */}
+                        </Form.Control>
+                    </Form.Group>
+                </Col>
+                <Col md={3}>
+                    <Form.Group controlId="xAxisSelect">
+                        <Form.Label>Column</Form.Label>
+                        <Form.Control as="select" value={selectedXaxis} onChange={handleXaxisChange}>
+                            <option value="">Select column type</option>
+                            <option value="requirements">Requirements</option>
+                            <option value="testcases">Test Cases</option>
+                            <option value="testplans">Test Plans</option>
+                            {/* <option value="testexecutions">Test Executions</option> */}
+                        </Form.Control>
+                    </Form.Group>
+                </Col>
             </Row>
+            <Row>
+                <Col>
+                    <Button className="mt-3" onClick={handleGenerateReport}>
+                        Generate Report
+                    </Button>
+                    {isTableGenerated && (
+                        <>
+                            <Button className="mt-3 ml-2" onClick={exportToPDF} style={{ marginLeft: '8px' }}>
+                                Export to PDF
+                            </Button>
+                            <Button className="mt-3 ml-2" onClick={exportToCSV} style={{ marginLeft: '8px' }}>
+                                Export to CSV
+                            </Button>
+                        </>
+                    )}
+                </Col>
+            </Row>
+            {isTableGenerated && (
+                <Card ref={cardRef} className="mt-3">
+                    <Card.Body>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    {tableData[0]?.map((header, index) => (
+                                        <th key={index}>{header}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {tableData.slice(1).map((row, rowIndex) => (
+                                    <tr key={rowIndex}>
+                                        {row.map((cell, cellIndex) => (
+                                            <td key={cellIndex} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                                <strong>{cell}</strong>
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </Card.Body>
+                </Card>
+            )}
         </Container>
     );
 };
