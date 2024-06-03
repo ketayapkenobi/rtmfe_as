@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Card, Button, Modal, ListGroup } from 'react-bootstrap';
 import NewTestPlanForm from './NewTestPlanForm';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function TestPlan({ projectID }) {
     const [testPlans, setTestPlans] = useState([]);
@@ -27,7 +30,7 @@ function TestPlan({ projectID }) {
     };
 
     const handleDeleteTestPlan = (testplanID) => {
-        const confirmed = window.confirm("Are you sure you want to delete this test plan?");
+        const confirmed = window.confirm(`Are you sure you want to delete test plan with ID ${testplanID}?`);
         if (!confirmed) {
             return;
         }
@@ -36,11 +39,10 @@ function TestPlan({ projectID }) {
             method: 'DELETE',
         })
             .then(() => {
-                setTestPlans(testPlans.filter(testPlan => testPlan.id !== testplanID));
+                setTestPlans(prevTestPlans => prevTestPlans.filter(testPlan => testPlan.testplanID !== testplanID));
             })
             .catch(error => console.error('Error:', error));
     };
-
 
     const handleShowRelatedTestCases = (testplanID) => {
         fetch(`http://localhost:8000/api/testplans/${testplanID}/related-testcases`)
@@ -71,7 +73,7 @@ function TestPlan({ projectID }) {
 
     const handleExecuteTestPlan = (testplanID) => {
         console.log(testplanID);
-        fetch(`http://localhost:8000/api/testplans/${testplanID}`, {
+        fetch(`http://localhost:8000/api/testplans/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -81,6 +83,7 @@ function TestPlan({ projectID }) {
             .then(response => response.json())
             .then(data => {
                 console.log('Test plan executed successfully:', data);
+                toast.success('Test plan executed successfully');
                 // Optionally, you can update the UI or show a message
             })
             .catch(error => console.error('Error:', error));
@@ -109,7 +112,7 @@ function TestPlan({ projectID }) {
                         <Card.Text><strong>Priority:</strong> {testPlan.priority_name}</Card.Text>
                         <Card.Text><strong>Status:</strong> {testPlan.status_name}</Card.Text>
                         <Button variant="primary" onClick={() => handleShowRelatedTestCases(testPlan.testplanID)} style={{ marginRight: '5px' }}>Test Cases</Button>
-                        <Button variant="danger" onClick={() => handleDeleteTestPlan(testPlan.id)}>Delete</Button>
+                        <Button variant="danger" onClick={() => handleDeleteTestPlan(testPlan.testplanID)}>Delete</Button>
                         <Button variant="success" onClick={() => handleExecuteTestPlan(testPlan.testplanID)} style={{ marginLeft: '5px' }}>Execute</Button>
                     </Card.Body>
                 </Card>

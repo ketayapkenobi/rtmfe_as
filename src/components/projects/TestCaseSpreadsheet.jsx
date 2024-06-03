@@ -19,6 +19,8 @@ function TestCasesSpreadsheet({ projectID }) {
     const [showRequirementsModal, setShowRequirementsModal] = useState(false);
     const [selectedTestCaseID, setSelectedTestCaseID] = useState(null);
     const [selectedRequirements, setSelectedRequirements] = useState([]);
+    const [editedRows, setEditedRows] = useState([]);
+    const [maxTestCaseNumber, setMaxTestCaseNumber] = useState(0);
 
     useEffect(() => {
         // Get the default height of the textarea
@@ -61,6 +63,12 @@ function TestCasesSpreadsheet({ projectID }) {
                     priority: testcase.priority_name,
                     status: testcase.status_name
                 })));
+
+                const maxNumber = data.testcases.reduce((max, req) => {
+                    const number = parseInt(req.testcaseID.split('-TC')[1], 10);
+                    return number > max ? number : max;
+                }, 0);
+                setMaxTestCaseNumber(maxNumber);
             })
             .catch(error => console.error('Error:', error));
 
@@ -92,6 +100,10 @@ function TestCasesSpreadsheet({ projectID }) {
             )
         );
 
+        if (!editedRows.includes(rowId)) {
+            setEditedRows(prevEditedRows => [...prevEditedRows, rowId]);
+        }
+
         // Wait for the state to update and then calculate the tallest cell height
         setTimeout(() => {
             const currentRow = e.target.parentNode.parentNode;
@@ -112,7 +124,6 @@ function TestCasesSpreadsheet({ projectID }) {
         }, 0);
     };
 
-
     const handleSelectRequirements = (testcaseID, selectedRequirements) => {
         setSelectedTestCaseID(testcaseID);
         setSelectedRequirements(selectedRequirements);
@@ -130,6 +141,10 @@ function TestCasesSpreadsheet({ projectID }) {
     // const handleRequirementsModalClose = () => {
     //     setShowRequirementsModal(false);
     // };
+
+    const isRowEdited = (rowId) => {
+        return editedRows.includes(rowId);
+    };
 
     const priorityMap = {
         'High': 1,
@@ -156,7 +171,7 @@ function TestCasesSpreadsheet({ projectID }) {
         const requirementIDs = Array.isArray(row.requirements) ? row.requirements : [];
         console.log('Requirement IDs:', requirementIDs);
 
-        // Check if the requirement ID already exists
+        // Check if the test case ID already exists
         fetch(`http://localhost:8000/api/testcases/check/${testcaseID}`)
             .then(response => response.json())
             .then(data => {
@@ -179,6 +194,7 @@ function TestCasesSpreadsheet({ projectID }) {
                         .then(() => {
                             toast.success('Test case updated successfully');
                             relateRequirements(testcaseID, requirementIDs);
+                            setEditedRows(prevEditedRows => prevEditedRows.filter(id => id !== rowId)); // Remove from editedRows
                         })
                         .catch(error => console.error('Error updating test case:', error));
                 } else {
@@ -201,11 +217,12 @@ function TestCasesSpreadsheet({ projectID }) {
                         .then(() => {
                             toast.success('Test Case created successfully');
                             relateRequirements(testcaseID, requirementIDs);
+                            setEditedRows(prevEditedRows => prevEditedRows.filter(id => id !== rowId)); // Remove from editedRows
                         })
                         .catch(error => console.error('Error creating test case:', error));
                 }
             })
-            .catch(error => console.error('Error checking requirement ID:', error));
+            .catch(error => console.error('Error checking test case ID:', error));
 
         // Function to relate requirements to a test case
         const relateRequirements = (testcaseID, requirementIDs) => {
@@ -225,18 +242,23 @@ function TestCasesSpreadsheet({ projectID }) {
         };
     };
 
+
     const addRow = () => {
-        setRows(prevRows => [
-            ...prevRows,
-            {
-                id: prevRows.length + 1,
-                testCaseId: projectID ? `${projectID}-TC${prevRows.length + 1}` : '',
-                testCaseName: '',
-                description: '',
-                priority: '',
-                status: ''
-            }
-        ]);
+        const newTestCaseNumber = maxTestCaseNumber + 1;
+        const formattedTestCaseNumber = String(newTestCaseNumber).padStart(2, '0');
+        const newRow = {
+            id: rows.length + 1,
+            testCaseId: projectID ? `${projectID}-TC${formattedTestCaseNumber}` : '',
+            testCaseName: '',
+            description: '',
+            priority: '',
+            status: ''
+        };
+        setRows(prevRows => [...prevRows, newRow]);
+
+        setEditedRows([...editedRows, newRow.id]);
+
+        setMaxTestCaseNumber(newTestCaseNumber);
 
         setSteps(prevSteps => [
             ...prevSteps,
@@ -366,7 +388,20 @@ function TestCasesSpreadsheet({ projectID }) {
                                 </select>
                             </td>
                             <td style={{ textAlign: 'center', padding: '10px' }}>
-                                <button onClick={() => handleTickClick(row.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#333', fontSize: '1.5em', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#f0f0f0', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+                                <button
+                                    onClick={() => handleTickClick(row.id)}
+                                    style={{
+                                        border: 'none',
+                                        background: 'none',
+                                        cursor: 'pointer',
+                                        color: isRowEdited(row.id) ? 'orange' : '#007bff',
+                                        fontSize: '1.5em',
+                                        padding: '5px 10px',
+                                        borderRadius: '5px',
+                                        backgroundColor: '#f0f0f0',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                    }}
+                                >
                                     <FontAwesomeIcon icon={faPencil} />
                                 </button>
                             </td>

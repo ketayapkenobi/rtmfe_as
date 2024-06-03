@@ -243,7 +243,7 @@ const TestCasesCoverageReport = ({ generatedReport }) => {
                         </Col>
                         <Col md={6}>
                             <h5>Pie Chart</h5>
-                            <div className="chart chart-sm">
+                            <div className="chart chart-sm" style={{ width: "250px", height: "250px" }}>
                                 <Pie data={data} ref={pieChartRef} />
                             </div>
                         </Col>

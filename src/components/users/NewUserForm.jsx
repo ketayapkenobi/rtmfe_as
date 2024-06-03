@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
 
 const NewUserForm = ({ show, handleClose, handleAddUser, roles }) => {
     const [name, setName] = useState('');
@@ -7,17 +7,58 @@ const NewUserForm = ({ show, handleClose, handleAddUser, roles }) => {
     const [password, setPassword] = useState('');
     const [role_id, setRole_id] = useState('');
     const [userID, setUserID] = useState('');
+    const [error, setError] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch('http://localhost:8000/api/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, email, password, role_id, userID }),
+        setError(''); // Reset error message
+
+        // Check if email already exists
+        fetch(`http://localhost:8000/api/users/check/email/${email}`, {
+            method: 'GET',
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.exists) {
+                    throw new Error('Email already exists');
+                } else {
+                    // Email does not exist, proceed with checking userID
+                    return fetch(`http://localhost:8000/api/users/check/${userID}`, {
+                        method: 'GET',
+                    });
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.exists) {
+                    throw new Error('UserID already exists');
+                } else {
+                    // UserID does not exist, proceed with form submission
+                    return fetch('http://localhost:8000/api/users', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name, email, password, role_id, userID }),
+                    });
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 handleAddUser(data); // Update users list with new user
                 setName('');
@@ -27,8 +68,12 @@ const NewUserForm = ({ show, handleClose, handleAddUser, roles }) => {
                 setUserID('');
                 handleClose();
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                setError(error.message);
+            });
     };
+
 
     return (
         <Modal show={show} onHide={handleClose}>
@@ -36,6 +81,7 @@ const NewUserForm = ({ show, handleClose, handleAddUser, roles }) => {
                 <Modal.Title>New User</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {error && <Alert variant="danger">{error}</Alert>}
                 <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="formName">
                         <Form.Label>Name</Form.Label>

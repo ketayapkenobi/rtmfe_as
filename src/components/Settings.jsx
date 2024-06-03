@@ -111,7 +111,7 @@ const Settings = () => {
       ref={innerRef}
       className={`settings js-settings ${isOpen ? "open" : ""}`}
     >
-      <div className="settings-toggle">
+      {/* <div className="settings-toggle">
         <div
           className="settings-toggle-option settings-toggle-option-text js-settings-toggle"
           title="Theme Builder"
@@ -127,7 +127,7 @@ const Settings = () => {
         >
           <BookOpen className="feather align-middle" />
         </a>
-      </div>
+      </div> */}
       <div className="settings-panel">
         <div className="settings-content">
           <div className="settings-title d-flex align-items-center">

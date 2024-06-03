@@ -75,7 +75,7 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
             priority_id: newTestPlan.priority_id,
             status_id: newTestPlan.status_id,
             project_id: projectID,
-            test_cases: newTestPlan.selectedTestCases.map(id => `P01-TC${id}`) // Assuming testCaseID format is 'P01-TC{ID}'
+            test_cases: newTestPlan.selectedTestCases // Assuming testCaseID format is 'P01-TC{ID}'
         };
 
         // API call to create the test plan
@@ -199,13 +199,13 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
                                     type="checkbox"
                                     id={`testcase-${testCase.id}`}
                                     label={`${testCase.testcaseID} - ${testCase.name}`}
-                                    checked={newTestPlan.selectedTestCases.includes(testCase.id)}
-                                    onChange={() => handleTestCaseChange(testCase.id)}
+                                    checked={newTestPlan.selectedTestCases.includes(testCase.testcaseID)}
+                                    onChange={() => handleTestCaseChange(testCase.testcaseID)}
                                 />
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
-                    <Button variant="primary" type="submit">Create</Button>
+                    <Button variant="primary" type="submit" style={{ marginTop: '10px' }}>Create</Button>
                 </Form>
             </Modal.Body>
         </Modal>

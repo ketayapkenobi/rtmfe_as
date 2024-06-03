@@ -8,6 +8,8 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
     const [error, setError] = useState('');
     const [users, setUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 8; // Number of users per page
 
     useEffect(() => {
         fetch(`http://localhost:8000/api/users`)
@@ -61,6 +63,23 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
             .catch(error => setError(error.message));
     };
 
+    // Calculate the current users to display based on pagination
+    const getCurrentPageUsers = () => {
+        // Paginate the users
+        const indexOfLastUser = currentPage * usersPerPage;
+        const indexOfFirstUser = indexOfLastUser - usersPerPage;
+        const currentPageUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+        // Divide the users into two columns
+        const midIndex = Math.ceil(currentPageUsers.length / 2);
+        const column1 = currentPageUsers.slice(0, midIndex);
+        const column2 = currentPageUsers.slice(midIndex);
+
+        return { column1, column2 };
+    };
+
+    // Handle pagination
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <Modal show={show} onHide={handleClose}>
@@ -103,19 +122,45 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
                     </Form.Group>
                     <Form.Group controlId="formSelectedUsers">
                         <Form.Label>Assign users to this project:</Form.Label>
-                        <div>
-                            {users.map(user => (
-                                <Form.Check
-                                    key={user.id}
-                                    type="checkbox"
-                                    label={user.name}
-                                    checked={selectedUsers.includes(user.id)}
-                                    onChange={() => handleUserCheckboxChange(user.id)}
-                                    style={{ marginRight: '10px' }} // Add some spacing between checkboxes
-                                />
-                            ))}
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ flex: 1 }}>
+                                {getCurrentPageUsers().column1.map(user => (
+                                    <Form.Check
+                                        key={user.id}
+                                        type="checkbox"
+                                        label={user.name}
+                                        checked={selectedUsers.includes(user.id)}
+                                        onChange={() => handleUserCheckboxChange(user.id)}
+                                        style={{ marginRight: '10px' }}
+                                    />
+                                ))}
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                {getCurrentPageUsers().column2.map(user => (
+                                    <Form.Check
+                                        key={user.id}
+                                        type="checkbox"
+                                        label={user.name}
+                                        checked={selectedUsers.includes(user.id)}
+                                        onChange={() => handleUserCheckboxChange(user.id)}
+                                        style={{ marginRight: '10px' }}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </Form.Group>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', marginBottom: '10px' }}>
+                        {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, i) => (
+                            <Button
+                                key={i}
+                                onClick={() => paginate(i + 1)}
+                                variant={i + 1 === currentPage ? 'primary' : 'secondary'}
+                                style={{ margin: '0 5px' }}
+                            >
+                                {i + 1}
+                            </Button>
+                        ))}
+                    </div>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
                             Close

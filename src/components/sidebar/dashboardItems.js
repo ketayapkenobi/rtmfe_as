@@ -17,7 +17,7 @@ import {
 
 const pagesSection = [
   {
-    href: "/dashboard",
+    href: "/dashboard/default",
     icon: Sliders,
     title: "Dashboards",
     // badge: "5",
@@ -385,10 +385,10 @@ const navItems = [
   //   title: "Tools & Components",
   //   pages: componentsSection,
   // },
-  {
-    title: "Plugins & Addons",
-    pages: pluginsSection,
-  },
+  // {
+  //   title: "Plugins & Addons",
+  //   pages: pluginsSection,
+  // },
 ];
 
 export default navItems;

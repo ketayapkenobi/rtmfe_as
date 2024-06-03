@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Modal, Button, Table } from 'react-bootstrap';
-import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faPencilAlt, faSave, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 function TestCaseSteps({ show, handleClose, testcaseID }) {
     const [steps, setSteps] = useState([]);
+    const [maxStepOrder, setMaxStepOrder] = useState(0);
     const [newStep, setNewStep] = useState({
         action: '',
         input: '',
         expected_result: ''
     });
     const [editStep, setEditStep] = useState(null);
+    const defaultHeight = 40; // Set your default height here
 
     const handleEditStep = (index) => {
         setEditStep(index);
@@ -23,6 +26,25 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
             updatedSteps[stepIndex] = editedStep;
             return updatedSteps;
         });
+        adjustTextareaHeight(e);
+    };
+
+    const adjustTextareaHeight = (e) => {
+        setTimeout(() => {
+            const currentRow = e.target.parentNode.parentNode;
+            const cells = currentRow.querySelectorAll('textarea');
+            const tallestCellHeight = Math.max(...Array.from(cells).map(cell => cell.scrollHeight));
+
+            const newHeight = tallestCellHeight > defaultHeight ? tallestCellHeight : defaultHeight;
+
+            cells.forEach(cell => {
+                if (e.target.value.trim() === '') {
+                    cell.style.height = `${defaultHeight}px`;
+                } else {
+                    cell.style.height = `${newHeight}px`;
+                }
+            });
+        }, 0);
     };
 
     useEffect(() => {
@@ -31,7 +53,8 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
         fetch(`http://localhost:8000/api/steps/${testcaseID}`)
             .then(response => response.json())
             .then(data => {
-                setSteps(data || []); // Assuming data is an array
+                setSteps(data.steps || []);
+                setMaxStepOrder(data.maxStepOrder || 0);
             })
             .catch(error => console.error('Error fetching steps:', error));
     }, [testcaseID]);
@@ -42,10 +65,11 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
             ...prevState,
             [name]: value
         }));
+        adjustTextareaHeight(e);
     };
 
     const handleAddStep = () => {
-        const stepOrder = steps.length + 1;
+        const stepOrder = maxStepOrder + 1;
 
         fetch(`http://localhost:8000/api/steps`, {
             method: 'POST',
@@ -66,15 +90,13 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
                     input: '',
                     expected_result: ''
                 });
+                setMaxStepOrder(stepOrder);
             })
             .catch(error => console.error('Error adding step:', error));
     };
 
     const handleSaveEdit = (step, stepOrder) => {
-        console.log('Step order:', stepOrder);
-        console.log('Test case ID:', testcaseID);
-
-        const editedStep = steps[editStep]; // Access the correct step using editStep
+        const editedStep = steps[editStep];
 
         const requestData = {
             testcase_id: testcaseID,
@@ -83,8 +105,6 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
             expected_result: editedStep.expected_result,
             step_order: stepOrder
         };
-
-        console.log('Data being sent to update API:', requestData);
 
         fetch(`http://localhost:8000/api/steps/${testcaseID}/${stepOrder}`, {
             method: 'PUT',
@@ -105,9 +125,21 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
                     return s;
                 });
                 setSteps(updatedSteps);
-                setEditStep(null); // Exit edit mode
+                setEditStep(null);
             })
             .catch(error => console.error('Error updating step:', error));
+    };
+
+    const handleDeleteStep = (stepOrder) => {
+        fetch(`http://localhost:8000/api/steps/${testcaseID}/${stepOrder}`, {
+            method: 'DELETE'
+        })
+            .then(response => response.json())
+            .then(data => {
+                const updatedSteps = steps.filter(step => step.step_order !== stepOrder);
+                setSteps(updatedSteps);
+            })
+            .catch(error => console.error('Error deleting step:', error));
     };
 
     return (
@@ -123,7 +155,7 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
                             <th>Action</th>
                             <th>Input</th>
                             <th>Expected Result</th>
-                            <th></th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -132,36 +164,59 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
                                 <td>{index + 1}</td>
                                 <td>{editStep === index ? (
                                     <Form.Control
-                                        type="text"
+                                        as="textarea"
                                         value={step.action}
                                         onChange={(e) => handleEditChange(e, index, 'action')}
+                                        style={{ resize: 'none', overflow: 'hidden' }}
                                     />
                                 ) : (
                                     step.action
                                 )}</td>
                                 <td>{editStep === index ? (
                                     <Form.Control
-                                        type="text"
+                                        as="textarea"
                                         value={step.input}
                                         onChange={(e) => handleEditChange(e, index, 'input')}
+                                        style={{ resize: 'none', overflow: 'hidden' }}
                                     />
                                 ) : (
                                     step.input
                                 )}</td>
                                 <td>{editStep === index ? (
                                     <Form.Control
-                                        type="text"
+                                        as="textarea"
                                         value={step.expected_result}
                                         onChange={(e) => handleEditChange(e, index, 'expected_result')}
+                                        style={{ resize: 'none', overflow: 'hidden' }}
                                     />
                                 ) : (
                                     step.expected_result
                                 )}</td>
-                                <td>{editStep === index ? (
-                                    <Button variant="success" onClick={() => handleSaveEdit(step, step.step_order)}>Save</Button>
-                                ) : (
-                                    <Button variant="primary" onClick={() => handleEditStep(index)}>Edit</Button>
-                                )}</td>
+                                <td className="d-flex flex-column">
+                                    {editStep === index ? (
+                                        <Button
+                                            variant="success"
+                                            onClick={() => handleSaveEdit(step, step.step_order)}
+                                            className="mb-2"
+                                        >
+                                            <FontAwesomeIcon icon={faSave} />
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant="primary"
+                                            onClick={() => handleEditStep(index)}
+                                            className="mb-2"
+                                        >
+                                            <FontAwesomeIcon icon={faPencilAlt} />
+                                        </Button>
+                                    )}
+                                    <Button
+                                        variant="danger"
+                                        onClick={() => handleDeleteStep(step.step_order)}
+                                    >
+                                        <FontAwesomeIcon icon={faTrash} />
+                                    </Button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -173,47 +228,49 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
                             <th>Action</th>
                             <th>Input</th>
                             <th>Expected Result</th>
-                            <th></th> {/* Empty column for the Add button */}
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
                                 <Form.Control
-                                    type="text"
+                                    as="textarea"
                                     placeholder="Enter action"
                                     name="action"
                                     value={newStep.action}
                                     onChange={handleInputChange}
+                                    style={{ resize: 'none', overflow: 'hidden', height: `${defaultHeight}px` }}
                                 />
                             </td>
                             <td>
                                 <Form.Control
-                                    type="text"
+                                    as="textarea"
                                     placeholder="Enter input"
                                     name="input"
                                     value={newStep.input}
                                     onChange={handleInputChange}
+                                    style={{ resize: 'none', overflow: 'hidden', height: `${defaultHeight}px` }}
                                 />
                             </td>
                             <td>
                                 <Form.Control
-                                    type="text"
+                                    as="textarea"
                                     placeholder="Enter expected result"
                                     name="expected_result"
                                     value={newStep.expected_result}
                                     onChange={handleInputChange}
+                                    style={{ resize: 'none', overflow: 'hidden', height: `${defaultHeight}px` }}
                                 />
                             </td>
                             <td>
                                 <Button variant="primary" onClick={handleAddStep}>
-                                    Add Step
+                                    <FontAwesomeIcon icon={faPlus} />
                                 </Button>
                             </td>
                         </tr>
                     </tbody>
                 </Table>
-
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>

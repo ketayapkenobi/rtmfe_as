@@ -102,7 +102,7 @@ const TestPlanBarChart = ({
         <div className="mt-3">
             <Card>
                 <Card.Header>
-                    <Card.Title>Test Plan Bar Chart</Card.Title>
+                    <Card.Title>Test Plan ID: {selectedTestPlan}</Card.Title>
                     <h6 className="card-subtitle text-muted">
                         Progress and result of each test execution
                     </h6>

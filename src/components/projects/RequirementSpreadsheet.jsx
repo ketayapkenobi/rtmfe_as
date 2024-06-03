@@ -5,12 +5,21 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function RequirementSpreadsheet({ projectID }) {
-    const [rows, setRows] = useState([]);
+    const [rows, setRows] = useState(Array.from({ length: 3 }, (_, index) => ({
+        id: index + 1,
+        requirementId: '',
+        requirementName: '',
+        description: '',
+        priority: '',
+        testCases: '',
+        status: ''
+    })));
     const [defaultHeight, setDefaultHeight] = useState(0);
     const [priorities, setPriorities] = useState([]);
     const [statuses, setStatuses] = useState([]);
     const [userRole, setUserRole] = useState('');
     const [editedRows, setEditedRows] = useState([]);
+    const [maxRequirementNumber, setMaxRequirementNumber] = useState(0);
 
     useEffect(() => {
         const authToken = localStorage.getItem('token');
@@ -57,6 +66,12 @@ function RequirementSpreadsheet({ projectID }) {
                     testCases: requirement.testCases,
                     status: requirement.status_name
                 })));
+
+                const maxNumber = data.requirements.reduce((max, req) => {
+                    const number = parseInt(req.requirementID.split('-R')[1], 10);
+                    return number > max ? number : max;
+                }, 0);
+                setMaxRequirementNumber(maxNumber);
             })
             .catch(error => console.error('Error:', error));
 
@@ -82,6 +97,24 @@ function RequirementSpreadsheet({ projectID }) {
                 row.id === rowId ? { ...row, [field]: value } : row
             )
         );
+
+        setTimeout(() => {
+            const currentRow = e.target.parentNode.parentNode;
+            const cells = currentRow.querySelectorAll('td textarea');
+            const tallestCellHeight = Math.max(...Array.from(cells).map(cell => cell.scrollHeight));
+
+            // Set the minimum height to the default height
+            const minHeight = defaultHeight;
+            const newHeight = tallestCellHeight > minHeight ? tallestCellHeight : minHeight;
+
+            // Apply the new height to all cells in the current row
+            cells.forEach(cell => cell.style.height = `${newHeight}px`);
+
+            // Reset the height to default if the value is empty
+            if (value.trim() === '') {
+                cells.forEach(cell => cell.style.height = `${defaultHeight}px`);
+            }
+        }, 0);
 
         // Check if the row is already marked as edited
         if (!editedRows.includes(rowId)) {
@@ -172,6 +205,8 @@ function RequirementSpreadsheet({ projectID }) {
                                     r.id === rowId ? { ...r, isNew: true } : r
                                 )
                             );
+                            // Remove the row ID from the editedRows state
+                            setEditedRows(prevEditedRows => prevEditedRows.filter(id => id !== rowId));
                         })
                         .catch(error => console.error('Error creating requirement:', error));
                 }
@@ -179,12 +214,12 @@ function RequirementSpreadsheet({ projectID }) {
             .catch(error => console.error('Error checking requirement ID:', error));
     };
 
-
-
     const addRow = () => {
+        const newRequirementNumber = maxRequirementNumber + 1;
+        const formattedRequirementNumber = String(newRequirementNumber).padStart(2, '0');
         const newRow = {
             id: rows.length + 1,
-            requirementId: projectID ? `${projectID}-R${rows.length + 1}` : '',
+            requirementId: projectID ? `${projectID}-R${formattedRequirementNumber}` : '',
             requirementName: '',
             description: '',
             priority: '',
@@ -195,6 +230,8 @@ function RequirementSpreadsheet({ projectID }) {
 
         // Mark the newly added row as edited
         setEditedRows([...editedRows, newRow.id]);
+
+        setMaxRequirementNumber(newRequirementNumber);
     };
 
 

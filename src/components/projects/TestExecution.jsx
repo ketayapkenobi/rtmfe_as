@@ -158,7 +158,7 @@ function TestExecution({ projectID }) {
                         <Card.Title>Test Execution ID: {testExecution.testexecutionID}</Card.Title>
                         <Card.Text>
                             <strong>Test Plan ID:</strong> {testExecution.testplanID}<br />
-                            <strong>Result:</strong>
+                            {/* <strong>Result:</strong>
                             <Form.Select
                                 value={testExecution.result_id}
                                 onChange={(e) => handleResultChange(index, e.target.value)}
@@ -171,7 +171,7 @@ function TestExecution({ projectID }) {
                                     <option key={option.id} value={option.id} style={{ backgroundColor: option.color, color: 'black' }}>{option.text}</option>
                                 ))}
                             </Form.Select>
-                            <br />
+                            <br /> */}
                             <strong>Progress:</strong>
                             {progress
                                 .filter(progressData => progressData.testexecutionID === testExecution.testexecutionID)
