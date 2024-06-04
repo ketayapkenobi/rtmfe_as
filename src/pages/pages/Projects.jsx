@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Badge, Button, Card, Col, Container, ListGroup, Modal, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
 import Project from '../../components/projects/Projects'; // Importing the Project component
 import NewProjectForm from '../../components/projects/NewProjectForm';
 import EditProjectForm from '../../components/projects/EditProjectForm';
+
+// Mock function to check if a user is logged in
+// Replace this with your actual authentication logic
+const isUserLoggedIn = () => {
+  return !!localStorage.getItem('token');
+};
 
 function Projects() {
   const [projects, setProjects] = useState([]);
@@ -16,59 +22,65 @@ function Projects() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userRole, setUserRole] = useState(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchData = async () => {
-      const authToken = localStorage.getItem('token');
-      try {
-        // Fetch current user role
-        const userResponse = await fetch('http://localhost:8000/api/current-user', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setUserRole(userData.role);
+    if (!isUserLoggedIn()) {
+      navigate('/auth/sign-in');
+    } else {
+      const fetchData = async () => {
+        const authToken = localStorage.getItem('token');
+        try {
+          // Fetch current user role
+          const userResponse = await fetch('http://localhost:8000/api/current-user', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`,
+            },
+          });
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            setUserRole(userData.role);
 
-          let projectsResponse;
-          if (userData.role === 'Project Manager') {
-            // Fetch all projects for project managers
-            projectsResponse = await fetch('http://localhost:8000/api/projects', {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authToken}`,
-              },
-            });
-          } else {
-            // Fetch projects for the current user
-            projectsResponse = await fetch(`http://localhost:8000/api/projects/current-user/${userData.userID}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authToken}`,
-              },
-            });
-          }
+            let projectsResponse;
+            if (userData.role === 'Project Manager') {
+              // Fetch all projects for project managers
+              projectsResponse = await fetch('http://localhost:8000/api/projects', {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${authToken}`,
+                },
+              });
+            } else {
+              // Fetch projects for the current user
+              projectsResponse = await fetch(`http://localhost:8000/api/projects/current-user/${userData.userID}`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${authToken}`,
+                },
+              });
+            }
 
-          if (projectsResponse.ok) {
-            const projectsData = await projectsResponse.json();
-            setProjects(projectsData);
+            if (projectsResponse.ok) {
+              const projectsData = await projectsResponse.json();
+              setProjects(projectsData);
+            } else {
+              console.error('Failed to fetch projects');
+            }
           } else {
-            console.error('Failed to fetch projects');
+            console.error('Failed to fetch current user');
           }
-        } else {
-          console.error('Failed to fetch current user');
+        } catch (error) {
+          console.error('Error fetching data:', error);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+      };
 
-    fetchData();
-  }, []);
+      fetchData();
+    }
+  }, [navigate]);
 
   const handleClose = () => {
     setShowModal(false);

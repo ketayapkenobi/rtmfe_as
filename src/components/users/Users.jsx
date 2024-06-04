@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Button, Container, ListGroup, Pagination } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 import NewUserForm from './NewUserForm'; // Import the NewUserForm component
+
+// Mock function to check if a user is logged in
+// Replace this with your actual authentication logic
+const isUserLoggedIn = () => {
+    return !!localStorage.getItem('token');
+};
 
 function Users() {
     const [users, setUsers] = useState([]);
@@ -11,8 +18,13 @@ function Users() {
     const [showModal, setShowModal] = useState(false);
     const [roles, setRoles] = useState([]); // State to store roles
     const [userRole, setUserRole] = useState(null); // State to store user's role
+    const navigate = useNavigate();
 
     useEffect(() => {
+        if (!isUserLoggedIn()) {
+            navigate('/auth/sign-in');
+        }
+
         const authToken = localStorage.getItem('token');
         fetch('http://localhost:8000/api/current-user', {
             method: 'GET',
@@ -34,7 +46,7 @@ function Users() {
             .then(response => response.json())
             .then(data => setRoles(data.roles))
             .catch(error => console.error('Error:', error));
-    }, []);
+    }, [navigate]);
 
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -50,7 +62,6 @@ function Users() {
         // Update the users list with the new user
         setUsers(prevUsers => [...prevUsers, newUser]);
     };
-
 
     const handleClose = () => {
         setShowModal(false);

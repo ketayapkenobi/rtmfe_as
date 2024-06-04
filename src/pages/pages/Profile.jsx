@@ -1,32 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
-
 import { Badge, Button, Card, Col, Container, Row } from "react-bootstrap";
-
 import { Briefcase, Home, MapPin, MessageSquare } from "react-feather";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
-import {
-  faFacebook,
-  faInstagram,
-  faLinkedin,
-  faTwitter,
-} from "@fortawesome/free-brands-svg-icons";
-
 import avatar1 from "../../assets/img/avatars/avatar.jpg";
 import avatar2 from "../../assets/img/avatars/avatar-2.jpg";
 import avatar4 from "../../assets/img/avatars/avatar-4.jpg";
 import avatar5 from "../../assets/img/avatars/avatar-5.jpg";
-
 import unsplash1 from "../../assets/img/photos/unsplash-1.jpg";
 import unsplash2 from "../../assets/img/photos/unsplash-2.jpg";
 
 const ProfileDetails = () => {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -62,108 +48,13 @@ const ProfileDetails = () => {
       <Card.Body className="text-center">
         {user ? (
           <>
-            {/* <img
-              src={avatar4}
-              alt="Stacie Hall"
-              className="img-fluid rounded-circle mb-2"
-              width="128"
-              height="128"
-            /> */}
             <Card.Title className="mb-0">{user.name}</Card.Title>
             <div className="text-muted mb-2">{user.role}</div>
-            {/* <div>
-              <Button size="sm" variant="primary" className="me-1">
-                Follow
-              </Button>
-              <Button size="sm" variant="primary">
-                <MessageSquare width={16} height={16} /> Message
-              </Button>
-            </div> */}
           </>
         ) : (
           <p>Loading...</p>
         )}
       </Card.Body>
-
-      <hr className="my-0" />
-
-      {/* <Card.Body>
-        <Card.Title>Skills</Card.Title>
-        <Badge bg="primary" className="me-2 my-1">
-          HTML
-        </Badge>
-        <Badge bg="primary" className="me-2 my-1">
-          JavaScript
-        </Badge>
-        <Badge bg="primary" className="me-2 my-1">
-          Sass
-        </Badge>
-        <Badge bg="primary" className="me-2 my-1">
-          Angular
-        </Badge>
-        <Badge bg="primary" className="me-2 my-1">
-          Vue
-        </Badge>
-        <Badge bg="primary" className="me-2 my-1">
-          React
-        </Badge>
-        <Badge bg="primary" className="me-2 my-1">
-          Redux
-        </Badge>
-        <Badge bg="primary" className="me-2 my-1">
-          UI
-        </Badge>
-        <Badge bg="primary" className="me-2 my-1">
-          UX
-        </Badge>
-      </Card.Body> */}
-
-      <hr className="my-0" />
-      {/* <Card.Body>
-        <Card.Title>About</Card.Title>
-        <ul className="list-unstyled mb-0">
-          <li className="mb-1">
-            <Home width={14} height={14} className="me-1" /> Lives in{" "}
-            <Link to="/dashboard/default">San Francisco, SA</Link>
-          </li>
-
-          <li className="mb-1">
-            <Briefcase width={14} height={14} className="me-1" /> Works at{" "}
-            <Link to="/dashboard/default">GitHub</Link>
-          </li>
-          <li className="mb-1">
-            <MapPin width={14} height={14} className="me-1" /> From{" "}
-            <Link to="/dashboard/default">Boston</Link>
-          </li>
-        </ul>
-      </Card.Body> */}
-      <hr className="my-0" />
-      {/* <Card.Body>
-        <Card.Title>Elsewhere</Card.Title>
-
-        <ul className="list-unstyled mb-0">
-          <li className="mb-1">
-            <FontAwesomeIcon icon={faGlobe} fixedWidth className="me-1" />
-            <Link to="/dashboard/default">staciehall.co</Link>
-          </li>
-          <li className="mb-1">
-            <FontAwesomeIcon icon={faTwitter} fixedWidth className="me-1" />
-            <Link to="/dashboard/default">Twitter</Link>
-          </li>
-          <li className="mb-1">
-            <FontAwesomeIcon icon={faFacebook} fixedWidth className="me-1" />
-            <Link to="/dashboard/default">Facebook</Link>
-          </li>
-          <li className="mb-1">
-            <FontAwesomeIcon icon={faInstagram} fixedWidth className="me-1" />
-            <Link to="/dashboard/default">Instagram</Link>
-          </li>
-          <li className="mb-1">
-            <FontAwesomeIcon icon={faLinkedin} fixedWidth className="me-1" />
-            <Link to="/dashboard/default">LinkedIn</Link>
-          </li>
-        </ul>
-      </Card.Body> */}
     </Card>
   );
 };
@@ -330,34 +221,56 @@ const Activities = () => (
           <strong>Chris Wood</strong> started following{" "}
           <strong>Stacie Hall</strong>
           <br />
-          <small className="text-muted">Yesterdag 1:51 pm</small>
+          <small className="text-muted">Yesterday 1:51 pm</small>
         </div>
-      </div>
-
-      <hr />
-      <div className="d-grid">
-        <Button variant="primary">Load more</Button>
       </div>
     </Card.Body>
   </Card>
 );
 
-const Profile = () => (
-  <React.Fragment>
-    <Helmet title="Profile" />
-    <Container fluid className="p-0">
-      <h1 className="h3 mb-3">Profile</h1>
+const Profile = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const navigate = useNavigate();
 
-      <Row>
-        <Col md="4" xl="3">
-          <ProfileDetails />
-        </Col>
-        <Col md="8" xl="9">
-          {/* <Activities /> */}
-        </Col>
-      </Row>
-    </Container>
-  </React.Fragment>
-);
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setIsAuthenticated(false);
+        navigate("/auth/sign-in");
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  const handleEditProfile = () => {
+    navigate("/settings");
+  };
+
+  if (!isAuthenticated) {
+    return null; // or a loading indicator
+  }
+
+  return (
+    <React.Fragment>
+      <Helmet>
+        <title>Profile | My App</title>
+      </Helmet>
+      <Container className="p-0">
+        <h1 className="h3 mb-3">Profile</h1>
+
+        <Row>
+          <Col md="4" xl="3">
+            <ProfileDetails />
+          </Col>
+          <Col md="8" xl="9">
+            {/* <Activities /> */}
+          </Col>
+        </Row>
+      </Container>
+    </React.Fragment>
+  );
+};
 
 export default Profile;

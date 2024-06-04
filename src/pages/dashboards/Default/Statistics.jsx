@@ -1,13 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { Badge, Col, Card, Row } from "react-bootstrap";
-
 import { DollarSign, ShoppingBag } from "react-feather";
-
 import illustration from "../../../assets/img/illustrations/customer-support.png";
 
 const Statistics = () => {
   const { t } = useTranslation();
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    // Fetch current user
+    axios.get('http://localhost:8000/api/current-user', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}` // assuming you store your token in localStorage
+      }
+    })
+      .then(response => {
+        setUserName(response.data.name);
+      })
+      .catch(error => {
+        console.error('Error fetching current user:', error);
+      });
+  }, []);
 
   return (
     <Row>
@@ -18,9 +33,9 @@ const Statistics = () => {
               <Col xs="6">
                 <div className="illustration-text p-3 m-1">
                   <h4 className="illustration-text">
-                    {t("Welcome back")}, Chris!
+                    {t("Welcome back")}, {userName}!!
                   </h4>
-                  <p className="mb-0">AppStack Dashboard</p>
+                  {/* <p className="mb-0">Artemiz</p> */}
                 </div>
               </Col>
               <Col xs={6} className="align-self-end text-end">

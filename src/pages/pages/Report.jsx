@@ -1,13 +1,25 @@
 // Report.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Nav } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import GeneralReport from "../../components/projects/GeneralReport";
 import TE_GenerateReport from "../../components/projects/TE_GenerateReport";
 import RTMPage from "../../components/projects/RTM";
 import CoverageReport from "../../components/projects/CoverageReport";
 
+const isUserLoggedIn = () => {
+    return !!localStorage.getItem('token');
+};
+
 const Report = () => {
     const [activeTab, setActiveTab] = useState("General Report");
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!isUserLoggedIn()) {
+            navigate('/auth/sign-in');
+        }
+    }, [navigate]);
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);

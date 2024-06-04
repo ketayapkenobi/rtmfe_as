@@ -48,7 +48,7 @@ const NavbarUser = () => {
         },
       });
       if (response.ok) {
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('token');
         console.log("Logged out successfully");
         navigate("/auth/sign-in");
       } else {

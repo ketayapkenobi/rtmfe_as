@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ProjectNavbar from './ProjectNavbar';
 import RequirementSpreadsheet from './RequirementSpreadsheet';
 import TestCaseSpreadsheet from './TestCaseSpreadsheet';
@@ -9,25 +9,37 @@ import { Card, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { PulseLoader } from 'react-spinners'; // Import the PulseLoader component
+import Statistics from '../../pages/dashboards/Analytics/Statistics';
+
+// Mock function to check if a user is logged in
+// Replace this with your actual authentication logic
+const isUserLoggedIn = () => {
+    return !!localStorage.getItem('token');
+};
 
 function ProjectDetails() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [project, setProject] = useState(null);
     const [selectedMenuItem, setSelectedMenuItem] = useState(null);
     const [teamMembers, setTeamMembers] = useState([]);
     const [showTeamMembers, setShowTeamMembers] = useState(false);
 
     useEffect(() => {
-        fetch(`http://localhost:8000/api/projects/${id}`)
-            .then(response => response.json())
-            .then(data => setProject(data))
-            .catch(error => console.error('Error:', error));
+        if (!isUserLoggedIn()) {
+            navigate('/auth/sign-in');
+        } else {
+            fetch(`http://localhost:8000/api/projects/${id}`)
+                .then(response => response.json())
+                .then(data => setProject(data))
+                .catch(error => console.error('Error:', error));
 
-        fetch(`http://localhost:8000/api/projects/${id}/members`)
-            .then(response => response.json())
-            .then(data => setTeamMembers(data.members))
-            .catch(error => console.error('Error:', error));
-    }, [id]);
+            fetch(`http://localhost:8000/api/projects/${id}/members`)
+                .then(response => response.json())
+                .then(data => setTeamMembers(data.members))
+                .catch(error => console.error('Error:', error));
+        }
+    }, [id, navigate]);
 
     if (!project) {
         return (
@@ -50,7 +62,8 @@ function ProjectDetails() {
             content = <TestCaseSpreadsheet projectID={project.projectID} />;
             break;
         case 'Test Plans':
-            content = <TestPlan projectID={project.projectID} />; break;
+            content = <TestPlan projectID={project.projectID} />;
+            break;
         case 'Test Executions':
             content = <TestExecution projectID={project.projectID} />;
             break;
@@ -62,6 +75,7 @@ function ProjectDetails() {
         <div>
             <h2>{project.projectName} ({project.projectID})</h2>
             <p>{project.projectDesc}</p>
+            <Statistics projectID={project.projectID} />
             <Card>
                 <Card.Header as="h5" onClick={() => setShowTeamMembers(!showTeamMembers)} style={{ cursor: 'pointer' }}>
                     Team Members <FontAwesomeIcon icon={faChevronDown} />

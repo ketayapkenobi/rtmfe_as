@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
+import { API_URL } from "../../Api";
+
 function Projects() {
     const [projects, setProjects] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8000/api/projects')
+        fetch(`${API_URL}/projects`)
             .then(response => response.json())
             .then(data => setProjects(data))
             .catch(error => console.error('Error:', error));
