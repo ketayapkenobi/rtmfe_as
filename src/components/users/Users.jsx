@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, ListGroup, Pagination } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEdit, faTrash, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import NewUserForm from './NewUserForm'; // Import the NewUserForm component
+import EditUserForm from './EditUserForm'; // Import the EditUserForm component
+import ViewUserModal from './ViewUserModal'; // Import the ViewUserModal component
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Mock function to check if a user is logged in
 // Replace this with your actual authentication logic
@@ -15,9 +19,13 @@ function Users() {
     const [users, setUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const usersPerPage = 10;
-    const [showModal, setShowModal] = useState(false);
+    const [showNewUserModal, setShowNewUserModal] = useState(false);
+    const [showEditUserModal, setShowEditUserModal] = useState(false);
+    const [showViewUserModal, setShowViewUserModal] = useState(false);
     const [roles, setRoles] = useState([]); // State to store roles
     const [userRole, setUserRole] = useState(null); // State to store user's role
+    const [selectedUser, setSelectedUser] = useState(null); // State to store the selected user for editing
+    const [viewedUser, setViewedUser] = useState(null); // State to store the user being viewed
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -63,16 +71,72 @@ function Users() {
         setUsers(prevUsers => [...prevUsers, newUser]);
     };
 
-    const handleClose = () => {
-        setShowModal(false);
+    const handleCloseNewUserModal = () => {
+        setShowNewUserModal(false);
     };
 
-    const handleShow = () => setShowModal(true);
+    const handleShowNewUserModal = () => {
+        setShowNewUserModal(true);
+    };
+
+    const handleEditUser = (updatedUser) => {
+        setUsers(users.map(user => user.id === updatedUser.id ? updatedUser : user));
+        setTimeout(() => {
+            toast.success('Team Member edited successfully!');
+        }, 1000); // Adjust the delay time as needed
+    };
+
+    const handleDeleteUser = (id) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+        if (!confirmDelete) {
+            return; // If the user cancels, do nothing
+        }
+
+        fetch(`http://localhost:8000/api/users/${id}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to delete user');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setUsers(users.filter(user => user.id !== id));
+                toast.success(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toast.error(error.message);
+            });
+    };
+
+    const handleCloseEditUserModal = () => {
+        setShowEditUserModal(false);
+        setSelectedUser(null); // Reset selected user after closing the modal
+    };
+
+    const handleShowEditUserModal = (user) => {
+        setSelectedUser(user); // Set the selected user for editing
+        setShowEditUserModal(true); // Open the modal for editing
+    };
+
+    const handleCloseViewUserModal = () => {
+        setShowViewUserModal(false);
+        setViewedUser(null); // Reset viewed user after closing the modal
+    };
+
+    const handleShowViewUserModal = (user) => {
+        console.log('Selected User:', user); // Log the user object to check if it contains projects
+        setViewedUser(user); // Set the user being viewed
+        setShowViewUserModal(true); // Open the modal for viewing
+    };
 
     return (
         <Container fluid className="p-0">
+            <ToastContainer />
             {userRole === 'Project Manager' && (
-                <Button variant="primary" className="float-end mt-n1" onClick={handleShow}>
+                <Button variant="primary" className="float-end mt-n1" onClick={handleShowNewUserModal}>
                     <FontAwesomeIcon icon={faUserPlus} /> New team member
                 </Button>
             )}
@@ -89,16 +153,21 @@ function Users() {
                                     <p style={{ marginBottom: '0.5rem' }}>{user.role_name}</p>
                                     <p style={{ marginBottom: '0.5rem' }}>User ID: {user.userID}</p>
                                 </div>
-                                {userRole === 'Project Manager' && (
-                                    <div>
-                                        <Button variant="warning" className="me-2">
-                                            <FontAwesomeIcon icon={faEdit} /> Edit
-                                        </Button>
-                                        <Button variant="danger">
-                                            <FontAwesomeIcon icon={faTrash} /> Delete
-                                        </Button>
-                                    </div>
-                                )}
+                                <div>
+                                    {userRole === 'Project Manager' && (
+                                        <>
+                                            <Button variant="primary" className="ms-2" onClick={() => handleShowViewUserModal(user)}>
+                                                <FontAwesomeIcon icon={faEye} /> View
+                                            </Button>
+                                            <Button variant="warning" className="ms-2" onClick={() => handleShowEditUserModal(user)}>
+                                                <FontAwesomeIcon icon={faEdit} /> Edit
+                                            </Button>
+                                            <Button variant="danger" onClick={() => handleDeleteUser(user.id)} className="ms-2">
+                                                <FontAwesomeIcon icon={faTrash} /> Delete
+                                            </Button>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </ListGroup.Item>
                     );
@@ -113,7 +182,23 @@ function Users() {
                 ))}
             </Pagination>
 
-            <NewUserForm show={showModal} handleClose={handleClose} handleAddUser={handleAddUser} roles={roles} />
+            <NewUserForm show={showNewUserModal} handleClose={handleCloseNewUserModal} handleAddUser={handleAddUser} roles={roles} />
+            {selectedUser && (
+                <EditUserForm
+                    show={showEditUserModal}
+                    handleClose={handleCloseEditUserModal}
+                    handleEditUser={handleEditUser}
+                    user={selectedUser}
+                    roles={roles}
+                />
+            )}
+            {viewedUser && (
+                <ViewUserModal
+                    show={showViewUserModal}
+                    handleClose={handleCloseViewUserModal}
+                    user={viewedUser}
+                />
+            )}
         </Container>
     );
 }
