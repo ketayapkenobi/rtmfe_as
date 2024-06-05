@@ -21,6 +21,8 @@ function Projects() {
   const [deleteProject, setDeleteProject] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userRole, setUserRole] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [projectsPerPage] = useState(8);
 
   const navigate = useNavigate();
 
@@ -182,6 +184,14 @@ function Projects() {
     borderRadius: '5px',
   };
 
+  // Pagination
+  const indexOfLastProject = currentPage * projectsPerPage;
+  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
+  const currentProjects = projects.slice(indexOfFirstProject, indexOfLastProject);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <Container fluid className="p-0">
       <Button variant="primary" className="float-end mt-n1" onClick={handleShow} style={{ display: userRole === 'Project Manager' ? 'block' : 'none' }}>
@@ -190,7 +200,7 @@ function Projects() {
       <h1 className="h3 mb-3">Projects</h1>
 
       <Row>
-        {projects.map(project => (
+        {currentProjects.map(project => (
           <Col key={project.id} md="6" lg="4" xl="3" className="mb-4">
             <Card style={{ ...cardStyle, ':hover': cardHoverStyle }}>
               {project.image && <Card.Img src={project.image} alt="Card image cap" />}
@@ -230,6 +240,15 @@ function Projects() {
           </Col>
         ))}
       </Row>
+
+      {/* Pagination */}
+      <ul className="pagination">
+        {Array.from({ length: Math.ceil(projects.length / projectsPerPage) }).map((_, index) => (
+          <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+            <button onClick={() => paginate(index + 1)} className="page-link">{index + 1}</button>
+          </li>
+        ))}
+      </ul>
 
       <NewProjectForm show={showModal} handleClose={handleClose} handleAddProject={handleAddProject} />
       {editProject && <EditProjectForm show={showEditModal} handleClose={handleClose} handleEditProject={handleEditProject} project={editProject} />}
