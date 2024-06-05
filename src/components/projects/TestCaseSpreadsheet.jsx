@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faPencil, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPencil, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Button } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,6 +21,7 @@ function TestCasesSpreadsheet({ projectID }) {
     const [selectedRequirements, setSelectedRequirements] = useState([]);
     const [editedRows, setEditedRows] = useState([]);
     const [maxTestCaseNumber, setMaxTestCaseNumber] = useState(0);
+    const [savedRows, setSavedRows] = useState([]);
 
     useEffect(() => {
         // Get the default height of the textarea
@@ -64,10 +65,8 @@ function TestCasesSpreadsheet({ projectID }) {
                     status: testcase.status_name
                 })));
 
-                const maxNumber = data.testcases.reduce((max, req) => {
-                    const number = parseInt(req.testcaseID.split('-TC')[1], 10);
-                    return number > max ? number : max;
-                }, 0);
+                const maxNumber = data.maxTestCaseNumber;
+                console.log(maxNumber);
                 setMaxTestCaseNumber(maxNumber);
             })
             .catch(error => console.error('Error:', error));
@@ -171,12 +170,10 @@ function TestCasesSpreadsheet({ projectID }) {
         const requirementIDs = Array.isArray(row.requirements) ? row.requirements : [];
         console.log('Requirement IDs:', requirementIDs);
 
-        // Check if the test case ID already exists
         fetch(`http://localhost:8000/api/testcases/check/${testcaseID}`)
             .then(response => response.json())
             .then(data => {
                 if (data.exists) {
-                    // Update existing test case
                     fetch(`http://localhost:8000/api/testcases/${testcaseID}`, {
                         method: 'PUT',
                         headers: {
@@ -194,11 +191,11 @@ function TestCasesSpreadsheet({ projectID }) {
                         .then(() => {
                             toast.success('Test case updated successfully');
                             relateRequirements(testcaseID, requirementIDs);
-                            setEditedRows(prevEditedRows => prevEditedRows.filter(id => id !== rowId)); // Remove from editedRows
+                            setEditedRows(prevEditedRows => prevEditedRows.filter(id => id !== rowId));
+                            setSavedRows(prevSavedRows => [...prevSavedRows, testcaseID]);
                         })
                         .catch(error => console.error('Error updating test case:', error));
                 } else {
-                    // Create new test case
                     fetch('http://localhost:8000/api/testcases', {
                         method: 'POST',
                         headers: {
@@ -217,7 +214,8 @@ function TestCasesSpreadsheet({ projectID }) {
                         .then(() => {
                             toast.success('Test Case created successfully');
                             relateRequirements(testcaseID, requirementIDs);
-                            setEditedRows(prevEditedRows => prevEditedRows.filter(id => id !== rowId)); // Remove from editedRows
+                            setEditedRows(prevEditedRows => prevEditedRows.filter(id => id !== rowId));
+                            setSavedRows(prevSavedRows => [...prevSavedRows, testcaseID]);
                         })
                         .catch(error => console.error('Error creating test case:', error));
                 }
@@ -241,7 +239,6 @@ function TestCasesSpreadsheet({ projectID }) {
                 .catch(error => console.error('Error relating requirements:', error));
         };
     };
-
 
     const addRow = () => {
         const newTestCaseNumber = maxTestCaseNumber + 1;
@@ -302,6 +299,26 @@ function TestCasesSpreadsheet({ projectID }) {
         }
     };
 
+    const handleDeleteClick = (testCaseId) => {
+        const confirmed = window.confirm('Are you sure you want to delete this test case?');
+
+        if (confirmed) {
+            fetch(`http://localhost:8000/api/testcases/${testCaseId}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        toast.success('Test Case deleted successfully');
+                        setRows(prevRows => prevRows.filter(row => row.testCaseId !== testCaseId));
+                        setSavedRows(prevSavedRows => prevSavedRows.filter(id => id !== testCaseId));
+                    } else {
+                        toast.error('Failed to delete test case');
+                    }
+                })
+                .catch(error => console.error('Error deleting test case:', error));
+        }
+    };
+
     return (
         <div>
             <ToastContainer />
@@ -312,7 +329,7 @@ function TestCasesSpreadsheet({ projectID }) {
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Test Case ID</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Test Case Name</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6', width: '30%' }}>Description</th>
-                        <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Steps</th>
+                        <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6', width: '10%' }}>Steps</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Requirements</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Priority</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Status</th>
@@ -337,23 +354,19 @@ function TestCasesSpreadsheet({ projectID }) {
                                             bottom: '5px',
                                             left: '50%',
                                             transform: 'translateX(-50%)',
-                                            padding: '10px 20px',
-                                            fontSize: '16px',
-                                            // fontWeight: 'bold',
-                                            lineHeight: '1.5',
-                                            borderRadius: '25px',
-                                            color: '##000000',
-                                            background: '#aed9e0', // pastel blue
+                                            padding: '5px 10px',  // Smaller padding
+                                            fontSize: '14px',    // Smaller font size
+                                            borderRadius: '15px', // Smaller border radius
+                                            color: '#000000',
+                                            background: '#aed9e0', // Pastel blue
                                             border: 'none',
-                                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
+                                            boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.15)', // Lighter shadow
                                             cursor: 'pointer',
                                             transition: 'background 0.3s, transform 0.3s',
                                         }}
                                     >
                                         Steps
                                     </Button>
-
-
                                 </div>
                             </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
@@ -399,10 +412,27 @@ function TestCasesSpreadsheet({ projectID }) {
                                         padding: '5px 10px',
                                         borderRadius: '5px',
                                         backgroundColor: '#f0f0f0',
-                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        marginBottom: '10px'
                                     }}
                                 >
                                     <FontAwesomeIcon icon={faPencil} />
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteClick(row.testCaseId)}
+                                    style={{
+                                        border: 'none',
+                                        background: 'none',
+                                        cursor: 'pointer',
+                                        color: '#9c0000',
+                                        fontSize: '1.5em',
+                                        padding: '5px 10px',
+                                        borderRadius: '5px',
+                                        backgroundColor: '#f0f0f0',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faTrash} />
                                 </button>
                             </td>
                         </tr>

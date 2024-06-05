@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -20,6 +20,7 @@ function RequirementSpreadsheet({ projectID }) {
     const [userRole, setUserRole] = useState('');
     const [editedRows, setEditedRows] = useState([]);
     const [maxRequirementNumber, setMaxRequirementNumber] = useState(0);
+    const [savedRows, setSavedRows] = useState([]);
 
     useEffect(() => {
         const authToken = localStorage.getItem('token');
@@ -67,11 +68,12 @@ function RequirementSpreadsheet({ projectID }) {
                     status: requirement.status_name
                 })));
 
-                const maxNumber = data.requirements.reduce((max, req) => {
-                    const number = parseInt(req.requirementID.split('-R')[1], 10);
-                    return number > max ? number : max;
-                }, 0);
+                const maxNumber = data.maxRequirementNumber;
+                console.log(maxNumber);
                 setMaxRequirementNumber(maxNumber);
+
+                // Add fetched requirements to savedRows
+                setSavedRows(data.requirements.map(req => req.requirementID));
             })
             .catch(error => console.error('Error:', error));
 
@@ -207,6 +209,8 @@ function RequirementSpreadsheet({ projectID }) {
                             );
                             // Remove the row ID from the editedRows state
                             setEditedRows(prevEditedRows => prevEditedRows.filter(id => id !== rowId));
+                            // Add the row ID to savedRows
+                            setSavedRows(prevSavedRows => [...prevSavedRows, requirementID]);
                         })
                         .catch(error => console.error('Error creating requirement:', error));
                 }
@@ -234,7 +238,6 @@ function RequirementSpreadsheet({ projectID }) {
         setMaxRequirementNumber(newRequirementNumber);
     };
 
-
     const getPriorityColor = (priority) => {
         switch (priority) {
             case 'High':
@@ -258,6 +261,35 @@ function RequirementSpreadsheet({ projectID }) {
                 return { color: 'black', backgroundColor: '#c1f8c1' }; // Pastel green
             default:
                 return { color: 'black', backgroundColor: 'transparent' };
+        }
+    };
+
+    const handleDeleteClick = (rowId) => {
+        const row = rows.find((r) => r.id === rowId);
+        if (!row) return;
+
+        const requirementID = row.requirementId;
+
+        // Display confirmation message
+        if (window.confirm('Are you sure you want to delete this requirement?')) {
+            fetch(`http://localhost:8000/api/requirements/${requirementID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        toast.success('Requirement deleted successfully');
+                        // Remove the row from the rows state
+                        setRows(prevRows => prevRows.filter(row => row.id !== rowId));
+                        // Remove the row ID from the savedRows state
+                        setSavedRows(prevSavedRows => prevSavedRows.filter(id => id !== requirementID));
+                    } else {
+                        toast.error('Failed to delete requirement');
+                    }
+                })
+                .catch(error => console.error('Error deleting requirement:', error));
         }
     };
 
@@ -345,22 +377,43 @@ function RequirementSpreadsheet({ projectID }) {
                             </td>
                             <td style={{ textAlign: 'center', padding: '10px' }}>
                                 {userRole !== 'Client' && (
-                                    <button
-                                        onClick={() => handleTickClick(row.id)}
-                                        style={{
-                                            border: 'none',
-                                            background: 'none',
-                                            cursor: 'pointer',
-                                            color: isRowEdited(row.id) ? 'orange' : '#007bff',
-                                            fontSize: '1.5em',
-                                            padding: '5px 10px',
-                                            borderRadius: '5px',
-                                            backgroundColor: '#f0f0f0',
-                                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faPencil} />
-                                    </button>
+                                    <>
+                                        <button
+                                            onClick={() => handleTickClick(row.id)}
+                                            style={{
+                                                border: 'none',
+                                                background: 'none',
+                                                cursor: 'pointer',
+                                                color: isRowEdited(row.id) ? 'orange' : '#007bff',
+                                                fontSize: '1.5em',
+                                                padding: '5px 10px',
+                                                borderRadius: '5px',
+                                                backgroundColor: '#f0f0f0',
+                                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                                marginRight: '5px' // Added to provide some space between buttons
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faPencil} />
+                                        </button>
+                                        {savedRows.includes(row.requirementId) && (
+                                            <button
+                                                onClick={() => handleDeleteClick(row.id)}
+                                                style={{
+                                                    border: 'none',
+                                                    background: 'none',
+                                                    cursor: 'pointer',
+                                                    color: '#9c0000', // Dark red color
+                                                    fontSize: '1.5em',
+                                                    padding: '5px 10px',
+                                                    borderRadius: '5px',
+                                                    backgroundColor: '#f0f0f0',
+                                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                                }}
+                                            >
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </button>
+                                        )}
+                                    </>
                                 )}
                             </td>
                         </tr>
