@@ -4,6 +4,7 @@ import NewTestPlanForm from './NewTestPlanForm';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { API_URL } from "../../Api";
 
 function TestPlan({ projectID }) {
     const [testPlans, setTestPlans] = useState([]);
@@ -13,12 +14,12 @@ function TestPlan({ projectID }) {
     const [allTestCases, setAllTestCases] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:8000/api/projects/${projectID}/testplans`)
+        fetch(`${API_URL}/projects/${projectID}/testplans`)
             .then(response => response.json())
             .then(data => setTestPlans(data.testPlans))
             .catch(error => console.error('Error:', error));
 
-        fetch(`http://localhost:8000/api/projects/${projectID}/testcases`)
+        fetch(`${API_URL}/projects/${projectID}/testcases`)
             .then(response => response.json())
             .then(data => setAllTestCases(data.testcases))
             .catch(error => console.error('Error:', error));
@@ -35,7 +36,7 @@ function TestPlan({ projectID }) {
             return;
         }
 
-        fetch(`http://localhost:8000/api/testplans/${testplanID}`, {
+        fetch(`${API_URL}/testplans/${testplanID}`, {
             method: 'DELETE',
         })
             .then(() => {
@@ -45,7 +46,7 @@ function TestPlan({ projectID }) {
     };
 
     const handleShowRelatedTestCases = (testplanID) => {
-        fetch(`http://localhost:8000/api/testplans/${testplanID}/related-testcases`)
+        fetch(`${API_URL}/testplans/${testplanID}/related-testcases`)
             .then(response => response.json())
             .then(data => {
                 setRelatedTestCases(data.relatedTestCases);
@@ -55,7 +56,7 @@ function TestPlan({ projectID }) {
     };
 
     const handleSaveRelatedTestCases = () => {
-        fetch(`http://localhost:8000/api/testplans/${selectedTestPlanID}/assign-testcases`, {
+        fetch(`${API_URL}/testplans/${selectedTestPlanID}/assign-testcases`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -73,7 +74,7 @@ function TestPlan({ projectID }) {
 
     const handleExecuteTestPlan = (testplanID) => {
         console.log(testplanID);
-        fetch(`http://localhost:8000/api/testplans/${id}`, {
+        fetch(`${API_URL}/testplans/${testplanID}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

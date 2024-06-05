@@ -6,6 +6,8 @@ import { Formik } from "formik";
 import { Alert, Button, Form } from "react-bootstrap";
 import axios from "axios";
 
+import { API_URL } from "../../Api";
+
 function SignIn() {
   const navigate = useNavigate();
 
@@ -26,7 +28,7 @@ function SignIn() {
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
           const response = await axios.post(
-            "http://localhost:8000/api/login",
+            `${API_URL}/login`,
             {
               email: values.email,
               password: values.password,
@@ -37,7 +39,7 @@ function SignIn() {
           localStorage.setItem("token", response.data.token);
 
           // Redirect to private route
-          navigate("/pages/projects");
+          navigate("/dashboard/default");
         } catch (error) {
           const message = error.response.data.error || "Something went wrong";
 

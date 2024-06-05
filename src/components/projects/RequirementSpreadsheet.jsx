@@ -5,6 +5,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Modal, Button, Table } from 'react-bootstrap';
 
+import { API_URL } from "../../Api";
+
 function RequirementSpreadsheet({ projectID }) {
     const [rows, setRows] = useState(Array.from({ length: 3 }, (_, index) => ({
         id: index + 1,
@@ -35,7 +37,7 @@ function RequirementSpreadsheet({ projectID }) {
         document.body.removeChild(textarea);
 
         // Fetch current user's role
-        fetch('http://localhost:8000/api/current-user', {
+        fetch(`${API_URL}/current-user`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -61,7 +63,7 @@ function RequirementSpreadsheet({ projectID }) {
         })));
 
         // Fetch requirements
-        fetch(`http://localhost:8000/api/projects/${projectID}/requirements`)
+        fetch(`${API_URL}/projects/${projectID}/requirements`)
             .then(response => response.json())
             .then(data => {
                 // Update the rows with fetched requirements
@@ -89,13 +91,13 @@ function RequirementSpreadsheet({ projectID }) {
             .catch(error => console.error('Error:', error));
 
         // Fetch priorities
-        fetch('http://localhost:8000/api/priority')
+        fetch(`${API_URL}/priority`)
             .then(response => response.json())
             .then(data => setPriorities(data.priorities))
             .catch(error => console.error('Error:', error));
 
         // Fetch statuses
-        fetch('http://localhost:8000/api/status')
+        fetch(`${API_URL}/status`)
             .then(response => response.json())
             .then(data => setStatuses(data.statuses))
             .catch(error => console.error('Error:', error));
@@ -162,12 +164,12 @@ function RequirementSpreadsheet({ projectID }) {
         }
 
         // Check if the requirement ID already exists
-        fetch(`http://localhost:8000/api/requirements/check/${requirementID}`)
+        fetch(`${API_URL}/requirements/check/${requirementID}`)
             .then(response => response.json())
             .then(data => {
                 if (data.exists) {
                     // If the requirement ID exists, update the requirement
-                    fetch(`http://localhost:8000/api/requirements/${requirementID}`, {
+                    fetch(`${API_URL}/requirements/${requirementID}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -190,7 +192,7 @@ function RequirementSpreadsheet({ projectID }) {
                         .catch(error => console.error('Error updating requirement:', error));
                 } else {
                     // If the requirement ID doesn't exist, proceed with creating the requirement
-                    fetch('http://localhost:8000/api/requirements', {
+                    fetch(`${API_URL}/requirements`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -285,7 +287,7 @@ function RequirementSpreadsheet({ projectID }) {
 
         // Display confirmation message
         if (window.confirm('Are you sure you want to delete this requirement?')) {
-            fetch(`http://localhost:8000/api/requirements/${requirementID}`, {
+            fetch(`${API_URL}/requirements/${requirementID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

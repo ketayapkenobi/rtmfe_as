@@ -6,6 +6,8 @@ import { Settings, User } from "react-feather";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { API_URL } from "../../Api";
+
 const NavbarUser = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
@@ -15,7 +17,7 @@ const NavbarUser = () => {
     const fetchUser = async () => {
       const authToken = localStorage.getItem('token');
       try {
-        const response = await fetch("http://localhost:8000/api/current-user", {
+        const response = await fetch(`${API_URL}/current-user`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -40,7 +42,7 @@ const NavbarUser = () => {
   const handleLogout = async () => {
     const authToken = localStorage.getItem('token');
     try {
-      const response = await fetch("http://localhost:8000/api/logout", {
+      const response = await fetch(`${API_URL}/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

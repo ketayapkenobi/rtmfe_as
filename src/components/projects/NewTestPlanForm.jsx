@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, ListGroup } from 'react-bootstrap';
 
+import { API_URL } from "../../Api";
+
 function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
     const [newTestPlan, setNewTestPlan] = useState({
         name: '',
@@ -15,7 +17,7 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
 
     useEffect(() => {
         if (show) {
-            fetch(`http://localhost:8000/api/testplans/${projectID}`)
+            fetch(`${API_URL}/testplans/${projectID}`)
                 .then(response => response.json())
                 .then(data => {
                     const latestNumber = parseInt(data, 10) + 1;
@@ -27,7 +29,7 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
                 })
                 .catch(error => console.error('Error:', error));
 
-            fetch(`http://localhost:8000/api/projects/${projectID}/testcases`)
+            fetch(`${API_URL}/projects/${projectID}/testcases`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Test cases data:', data);
@@ -79,7 +81,7 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
         };
 
         // API call to create the test plan
-        fetch('http://localhost:8000/api/testplans', {
+        fetch(`${API_URL}/testplans`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -102,7 +104,7 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
                 onSubmit(data);
 
                 // API call to relate test cases to the test plan
-                fetch(`http://localhost:8000/api/testplans/${formData.testplanID}/assign-testcases`, {
+                fetch(`${API_URL}/testplans/${formData.testplanID}/assign-testcases`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

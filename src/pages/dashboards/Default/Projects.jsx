@@ -3,12 +3,14 @@ import axios from "axios";
 import { Badge, Card, Dropdown, Table } from "react-bootstrap";
 import { MoreHorizontal } from "react-feather";
 
+import { API_URL } from "../../../Api";
+
 const Projects = () => {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
     // Fetch projects
-    axios.get('http://localhost:8000/api/projects')
+    axios.get(`${API_URL}/projects`)
       .then(response => {
         setProjects(response.data);
       })

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 
+import { API_URL } from "../../Api";
+
 const NewUserForm = ({ show, handleClose, handleAddUser, roles }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -14,7 +16,7 @@ const NewUserForm = ({ show, handleClose, handleAddUser, roles }) => {
         setError(''); // Reset error message
 
         // Check if email already exists
-        fetch(`http://localhost:8000/api/users/check/email/${email}`, {
+        fetch(`${API_URL}/users/check/email/${email}`, {
             method: 'GET',
         })
             .then(response => {
@@ -28,7 +30,7 @@ const NewUserForm = ({ show, handleClose, handleAddUser, roles }) => {
                     throw new Error('Email already exists');
                 } else {
                     // Email does not exist, proceed with checking userID
-                    return fetch(`http://localhost:8000/api/users/check/${userID}`, {
+                    return fetch(`${API_URL}/users/check/${userID}`, {
                         method: 'GET',
                     });
                 }
@@ -44,7 +46,7 @@ const NewUserForm = ({ show, handleClose, handleAddUser, roles }) => {
                     throw new Error('UserID already exists');
                 } else {
                     // UserID does not exist, proceed with form submission
-                    return fetch('http://localhost:8000/api/users', {
+                    return fetch(`${API_URL}/users`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

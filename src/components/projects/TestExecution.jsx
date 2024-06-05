@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 
+import { API_URL } from "../../Api";
 
 function TestExecution({ projectID }) {
     const [testExecutions, setTestExecutions] = useState([]);
@@ -12,12 +13,12 @@ function TestExecution({ projectID }) {
     const [progress, setProgress] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:8000/api/projects/${projectID}/testexecutions`)
+        fetch(`${API_URL}/projects/${projectID}/testexecutions`)
             .then(response => response.json())
             .then(data => setTestExecutions(data.testExecutions))
             .catch(error => console.error('Error:', error));
 
-        fetch('http://localhost:8000/api/current-user', {
+        fetch(`${API_URL}/current-user`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -31,7 +32,7 @@ function TestExecution({ projectID }) {
     useEffect(() => {
         if (testExecutions.length > 0) {
             testExecutions.forEach(testExecution => {
-                fetch(`http://localhost:8000/api/testexecutions/${testExecution.testexecutionID}/progress`)
+                fetch(`${API_URL}/testexecutions/${testExecution.testexecutionID}/progress`)
                     .then(response => response.json())
                     .then(data => {
                         setProgress(prevProgress => {
@@ -96,7 +97,7 @@ function TestExecution({ projectID }) {
     };
 
     const handleSave = (testexecutionID, stepID, updatedStep) => {
-        fetch(`http://localhost:8000/api/testexecutions/${testexecutionID}/${stepID}`, {
+        fetch(`${API_URL}/testexecutions/${testexecutionID}/${stepID}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -120,7 +121,7 @@ function TestExecution({ projectID }) {
                 toast.success('Test result updated successfully');
 
                 // Update progress bar with current data
-                fetch(`http://localhost:8000/api/testexecutions/${testexecutionID}/progress`)
+                fetch(`${API_URL}/testexecutions/${testexecutionID}/progress`)
                     .then(response => response.json())
                     .then(data => {
                         const { progress, total_percentage } = data;

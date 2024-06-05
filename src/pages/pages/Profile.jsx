@@ -12,6 +12,8 @@ import avatar5 from "../../assets/img/avatars/avatar-5.jpg";
 import unsplash1 from "../../assets/img/photos/unsplash-1.jpg";
 import unsplash2 from "../../assets/img/photos/unsplash-2.jpg";
 
+import { API_URL } from "../../Api";
+
 const ProfileDetails = () => {
   const [user, setUser] = useState(null);
 
@@ -19,7 +21,7 @@ const ProfileDetails = () => {
     const fetchUser = async () => {
       const authToken = localStorage.getItem('token');
       try {
-        const response = await fetch("http://localhost:8000/api/current-user", {
+        const response = await fetch(`${API_URL}/current-user`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

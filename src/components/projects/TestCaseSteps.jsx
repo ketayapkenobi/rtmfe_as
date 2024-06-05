@@ -3,6 +3,8 @@ import { Form, Modal, Button, Table } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faPencilAlt, faSave, faTrash } from '@fortawesome/free-solid-svg-icons';
 
+import { API_URL } from "../../Api";
+
 function TestCaseSteps({ show, handleClose, testcaseID }) {
     const [steps, setSteps] = useState([]);
     const [maxStepOrder, setMaxStepOrder] = useState(0);
@@ -50,7 +52,7 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
     useEffect(() => {
         if (!testcaseID) return;
 
-        fetch(`http://localhost:8000/api/steps/${testcaseID}`)
+        fetch(`${API_URL}/steps/${testcaseID}`)
             .then(response => response.json())
             .then(data => {
                 setSteps(data.steps || []);
@@ -71,7 +73,7 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
     const handleAddStep = () => {
         const stepOrder = maxStepOrder + 1;
 
-        fetch(`http://localhost:8000/api/steps`, {
+        fetch(`${API_URL}/steps`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -106,7 +108,7 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
             step_order: stepOrder
         };
 
-        fetch(`http://localhost:8000/api/steps/${testcaseID}/${stepOrder}`, {
+        fetch(`${API_URL}/steps/${testcaseID}/${stepOrder}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -131,7 +133,7 @@ function TestCaseSteps({ show, handleClose, testcaseID }) {
     };
 
     const handleDeleteStep = (stepOrder) => {
-        fetch(`http://localhost:8000/api/steps/${testcaseID}/${stepOrder}`, {
+        fetch(`${API_URL}/steps/${testcaseID}/${stepOrder}`, {
             method: 'DELETE'
         })
             .then(response => response.json())

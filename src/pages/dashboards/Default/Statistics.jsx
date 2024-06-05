@@ -5,6 +5,8 @@ import { Badge, Col, Card, Row } from "react-bootstrap";
 import { Book, Users } from "react-feather";
 import illustration from "../../../assets/img/illustrations/customer-support.png";
 
+import { API_URL } from "../../../Api";
+
 const Statistics = () => {
   const { t } = useTranslation();
   const [userName, setUserName] = useState('');
@@ -13,7 +15,7 @@ const Statistics = () => {
 
   useEffect(() => {
     // Fetch current user
-    axios.get('http://localhost:8000/api/current-user', {
+    axios.get(`${API_URL}/current-user`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}` // assuming you store your token in localStorage
       }
@@ -26,7 +28,7 @@ const Statistics = () => {
       });
 
     // Fetch total projects and users
-    axios.get('http://localhost:8000/api/dashboard')
+    axios.get(`${API_URL}/dashboard`)
       .then(response => {
         setProjectsCount(response.data.projects_count);
         setUsersCount(response.data.users_count);

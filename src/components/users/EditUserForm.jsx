@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
+import { API_URL } from "../../Api";
+
 const EditUserForm = ({ show, handleClose, handleEditUser, user, roles }) => {
     const [name, setName] = useState(user ? user.name : '');
     const [email, setEmail] = useState(user ? user.email : '');
@@ -29,7 +31,7 @@ const EditUserForm = ({ show, handleClose, handleEditUser, user, roles }) => {
         }
 
         // Proceed with form submission
-        fetch(`http://localhost:8000/api/users/${user.id}`, {
+        fetch(`${API_URL}/users/${user.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

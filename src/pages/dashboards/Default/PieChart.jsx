@@ -7,12 +7,14 @@ import { faSquare } from "@fortawesome/free-solid-svg-icons";
 import usePalette from "../../../hooks/usePalette";
 import axios from "axios";
 
+import { API_URL } from "../../../Api";
+
 const PieChart = () => {
   const palette = usePalette();
   const [userStats, setUserStats] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/dashboard/piechart")
+    axios.get(`${API_URL}/dashboard/piechart`)
       .then(response => {
         setUserStats(response.data.userStats);
       })

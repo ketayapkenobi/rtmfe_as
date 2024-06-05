@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faLink } from '@fortawesome/free-solid-svg-icons'; // Add any other icons you need
 import html2pdf from "html2pdf.js";
 
+import { API_URL } from "../../Api";
+
 const RTMPage = () => {
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
@@ -32,7 +34,7 @@ const RTMPage = () => {
     }, [selectedProject]);
 
     const fetchProjects = () => {
-        fetch("http://localhost:8000/api/projects")
+        fetch(`${API_URL}/projects`)
             .then((response) => response.json())
             .then((data) => {
                 setProjects(data);
@@ -41,7 +43,7 @@ const RTMPage = () => {
     };
 
     const fetchRequirements = (projectId) => {
-        fetch(`http://localhost:8000/api/projects/${projectId}/requirements`)
+        fetch(`${API_URL}/projects/${projectId}/requirements`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch requirements");
@@ -64,7 +66,7 @@ const RTMPage = () => {
     };
 
     const fetchTestCases = (projectId) => {
-        fetch(`http://localhost:8000/api/projects/${projectId}/testcases`)
+        fetch(`${API_URL}/projects/${projectId}/testcases`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch test cases");
@@ -87,7 +89,7 @@ const RTMPage = () => {
     };
 
     const fetchTestPlans = (projectId) => {
-        return fetch(`http://localhost:8000/api/projects/${projectId}/testplans`)
+        return fetch(`${API_URL}/projects/${projectId}/testplans`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch test plans");
@@ -110,7 +112,7 @@ const RTMPage = () => {
     };
 
     const fetchTestExecutions = (projectId) => {
-        return fetch(`http://localhost:8000/api/projects/${projectId}/testexecutions`)
+        return fetch(`${API_URL}/projects/${projectId}/testexecutions`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch test executions");

@@ -6,6 +6,8 @@ import TestCasesCoverageReport from "./TestCasesCoverageReport";
 import TestPlansCoverageReport from "./TestPlansCoverageReport";
 import TestExecutionsReport from "./TestExecutionsReport";
 
+import { API_URL } from "../../Api";
+
 const CoverageReport = () => {
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
@@ -18,7 +20,7 @@ const CoverageReport = () => {
     }, []);
 
     const fetchProjects = () => {
-        fetch("http://localhost:8000/api/projects")
+        fetch(`${API_URL}/projects`)
             .then((response) => response.json())
             .then((data) => {
                 setProjects(data);
@@ -37,7 +39,7 @@ const CoverageReport = () => {
 
     const handleGenerateReport = () => {
         setLoading(true);
-        fetch(`http://localhost:8000/api/coverage/${selectedProject}/${selectedReportType}`)
+        fetch(`${API_URL}/coverage/${selectedProject}/${selectedReportType}`)
             .then((response) => response.json())
             .then((data) => {
                 setGeneratedReport(data);

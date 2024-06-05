@@ -5,6 +5,8 @@ import usePalette from "../../hooks/usePalette";
 import TestExecutionPieChart from "./TestExecutionPieChart";
 import TestPlanBarChart from "./TestPlanBarChart";
 
+import { API_URL } from "../../Api";
+
 const TE_GenerateReport = () => {
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
@@ -24,7 +26,7 @@ const TE_GenerateReport = () => {
     }, []);
 
     const fetchProjects = () => {
-        fetch("http://localhost:8000/api/projects")
+        fetch(`${API_URL}/projects`)
             .then((response) => response.json())
             .then((data) => {
                 setProjects(data);
@@ -33,7 +35,7 @@ const TE_GenerateReport = () => {
     };
 
     const fetchTestExecutions = (projectID) => {
-        fetch(`http://localhost:8000/api/testexecutions/${projectID}`)
+        fetch(`${API_URL}/testexecutions/${projectID}`)
             .then((response) => response.json())
             .then((data) => {
                 setTestExecutions(data.testExecutions);
@@ -42,7 +44,7 @@ const TE_GenerateReport = () => {
     };
 
     const fetchTestPlans = (projectID) => {
-        fetch(`http://localhost:8000/api/testplans/${projectID}/index`)
+        fetch(`${API_URL}/testplans/${projectID}/index`)
             .then((response) => response.json())
             .then((data) => {
                 setTestPlans(data.testPlans);
@@ -68,7 +70,7 @@ const TE_GenerateReport = () => {
     };
 
     const fetchProgress = (testexecutionID) => {
-        fetch(`http://localhost:8000/api/testexecutions/${testexecutionID}/progress`)
+        fetch(`${API_URL}/testexecutions/${testexecutionID}/progress`)
             .then((response) => response.json())
             .then((data) => {
                 const progressData = data.progress.reduce((acc, item) => {
@@ -129,7 +131,7 @@ const TE_GenerateReport = () => {
     };
 
     const fetchTestExecutionsForTestPlan = (testplanID) => {
-        fetch(`http://localhost:8000/api/testplans/${testplanID}/testexecutions`)
+        fetch(`${API_URL}/testplans/${testplanID}/testexecutions`)
             .then((response) => response.json())
             .then((data) => {
                 setTestExecutionsProgress(data.testExecutionsProgress); // Set the state with the fetched data

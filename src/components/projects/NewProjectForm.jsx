@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 
+import { API_URL } from "../../Api";
+
 const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
     const [projectID, setProjectID] = useState('');
     const [projectName, setProjectName] = useState('');
@@ -12,7 +14,7 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
     const usersPerPage = 8; // Number of users per page
 
     useEffect(() => {
-        fetch(`http://localhost:8000/api/users`)
+        fetch(`${API_URL}/users`)
             .then(response => response.json())
             .then(data => setUsers(data.users))
             .catch(error => console.error('Error:', error));
@@ -33,7 +35,7 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
         setError(''); // Reset error message
 
         // Check if projectID already exists
-        fetch(`http://localhost:8000/api/projects/check/${projectID}`, {
+        fetch(`${API_URL}/projects/check/${projectID}`, {
             method: 'GET',
         })
             .then(response => response.json())
@@ -42,7 +44,7 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
                     throw new Error('Project ID already exists');
                 } else {
                     // Project ID does not exist, proceed with form submission
-                    return fetch('http://localhost:8000/api/projects', {
+                    return fetch(`${API_URL}/projects`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

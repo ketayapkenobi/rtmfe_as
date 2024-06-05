@@ -4,12 +4,14 @@ import { Card } from "react-bootstrap";
 import usePalette from "../../../hooks/usePalette";
 import axios from "axios";
 
+import { API_URL } from "../../../Api";
+
 const BarChart = () => {
   const palette = usePalette();
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/dashboard/barchart")
+    axios.get(`${API_URL}/dashboard/barchart`)
       .then(response => {
         setProjects(response.data.projects);
       })

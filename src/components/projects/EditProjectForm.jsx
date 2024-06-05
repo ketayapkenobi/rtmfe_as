@@ -3,6 +3,7 @@ import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { API_URL } from "../../Api";
 
 const EditProjectForm = ({ show, handleClose, handleEditProject, project }) => {
     const [projectID, setProjectID] = useState(project.projectID);
@@ -16,7 +17,7 @@ const EditProjectForm = ({ show, handleClose, handleEditProject, project }) => {
 
     useEffect(() => {
         // Fetch all users
-        fetch('http://localhost:8000/api/users')
+        fetch(`${API_URL}/users`)
             .then(response => response.json())
             .then(data => {
                 console.log("Users data:", data); // Debugging line
@@ -27,7 +28,7 @@ const EditProjectForm = ({ show, handleClose, handleEditProject, project }) => {
             .catch(error => console.error('Error:', error));
 
         // Fetch current project members
-        fetch(`http://localhost:8000/api/projects/${project.id}/members`)
+        fetch(`${API_URL}/projects/${project.id}/members`)
             .then(response => response.json())
             .then(data => {
                 console.log("Project members:", data); // Debugging line
@@ -61,7 +62,7 @@ const EditProjectForm = ({ show, handleClose, handleEditProject, project }) => {
             console.log("Project ID:", projectID);
             console.log("Selected User IDs:", selectedUsers.map(userID => userID.toString()));
 
-            const response = await fetch('http://localhost:8000/api/projects/assign-user', {
+            const response = await fetch(`${API_URL}/projects/assign-user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

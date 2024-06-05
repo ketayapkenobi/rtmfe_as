@@ -6,6 +6,8 @@ import TestCasesReport from "./TestCasesReport";
 import TestPlansReport from "./TestPlansReport";
 import TestExecutionsReport from "./TestExecutionsReport";
 
+import { API_URL } from "../../Api";
+
 const GeneralReport = () => {
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
@@ -18,7 +20,7 @@ const GeneralReport = () => {
     }, []);
 
     const fetchProjects = () => {
-        fetch("http://localhost:8000/api/projects")
+        fetch(`${API_URL}/projects`)
             .then((response) => response.json())
             .then((data) => {
                 setProjects(data);
@@ -37,7 +39,7 @@ const GeneralReport = () => {
     const handleGenerateReport = () => {
         if (selectedProject && selectedReportType) {
             setLoading(true);
-            const endpoint = `http://localhost:8000/api/projects/${selectedProject}/${selectedReportType}/report`;
+            const endpoint = `${API_URL}/projects/${selectedProject}/${selectedReportType}/report`;
             fetch(endpoint)
                 .then((response) => response.json())
                 .then((data) => {

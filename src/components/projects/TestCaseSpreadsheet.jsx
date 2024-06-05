@@ -8,6 +8,8 @@ import TestCaseSteps from './TestCaseSteps';
 import RelateRequirementsModal from './RelateRequirementsModal';
 import { Modal, Table } from 'react-bootstrap';
 
+import { API_URL } from "../../Api";
+
 function TestCasesSpreadsheet({ projectID }) {
     const [rows, setRows] = useState([]);
     const [defaultHeight, setDefaultHeight] = useState(0);
@@ -36,7 +38,7 @@ function TestCasesSpreadsheet({ projectID }) {
         document.body.removeChild(textarea);
 
         // Fetch current user's role
-        fetch('http://localhost:8000/api/current-user', {
+        fetch(`${API_URL}/current-user`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -71,7 +73,7 @@ function TestCasesSpreadsheet({ projectID }) {
         })));
 
         // Fetch test cases
-        fetch(`http://localhost:8000/api/projects/${projectID}/testcases`)
+        fetch(`${API_URL}/projects/${projectID}/testcases`)
             .then(response => response.json())
             .then(data => {
                 // Update the rows with fetched requirements
@@ -96,19 +98,19 @@ function TestCasesSpreadsheet({ projectID }) {
             .catch(error => console.error('Error:', error));
 
         // Fetch requirements
-        fetch(`http://localhost:8000/api/projects/${projectID}/requirements`)
+        fetch(`${API_URL}/projects/${projectID}/requirements`)
             .then(response => response.json())
             .then(data => setRequirements(data.requirements))
             .catch(error => console.error('Error:', error));
 
         // Fetch priorities
-        fetch('http://localhost:8000/api/priority')
+        fetch(`${API_URL}/priority`)
             .then(response => response.json())
             .then(data => setPriorities(data.priorities))
             .catch(error => console.error('Error:', error));
 
         // Fetch statuses
-        fetch('http://localhost:8000/api/status')
+        fetch(`${API_URL}/status`)
             .then(response => response.json())
             .then(data => setStatuses(data.statuses))
             .catch(error => console.error('Error:', error));
@@ -196,11 +198,11 @@ function TestCasesSpreadsheet({ projectID }) {
         const requirementIDs = Array.isArray(row.requirements) ? row.requirements : [];
         console.log('Requirement IDs:', requirementIDs);
 
-        fetch(`http://localhost:8000/api/testcases/check/${testcaseID}`)
+        fetch(`${API_URL}/testcases/check/${testcaseID}`)
             .then(response => response.json())
             .then(data => {
                 if (data.exists) {
-                    fetch(`http://localhost:8000/api/testcases/${testcaseID}`, {
+                    fetch(`${API_URL}/testcases/${testcaseID}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -223,7 +225,7 @@ function TestCasesSpreadsheet({ projectID }) {
                         })
                         .catch(error => console.error('Error updating test case:', error));
                 } else {
-                    fetch('http://localhost:8000/api/testcases', {
+                    fetch(`${API_URL}/testcases`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -252,7 +254,7 @@ function TestCasesSpreadsheet({ projectID }) {
 
         // Function to relate requirements to a test case
         const relateRequirements = (testcaseID, requirementIDs) => {
-            fetch(`http://localhost:8000/api/testcases/${testcaseID}/relate-requirements`, {
+            fetch(`${API_URL}/testcases/${testcaseID}/relate-requirements`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -331,7 +333,7 @@ function TestCasesSpreadsheet({ projectID }) {
         const confirmed = window.confirm('Are you sure you want to delete this test case?');
 
         if (confirmed) {
-            fetch(`http://localhost:8000/api/testcases/${testCaseId}`, {
+            fetch(`${API_URL}/testcases/${testCaseId}`, {
                 method: 'DELETE',
             })
                 .then(response => {
