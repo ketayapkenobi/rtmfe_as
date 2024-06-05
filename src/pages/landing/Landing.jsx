@@ -689,10 +689,10 @@ const Features = () => (
                   <Sliders />
                 </div>
                 <div className="flex-grow-1">
-                  <h4 className="mt-0">Customizable</h4>
+                  <h4 className="mt-0">Responsive Spreadsheet</h4>
                   <p className="fs-lg">
-                    You don't need to be an expert to customize our themes. Our
-                    code is very readable and well documented.
+                    A spreadsheet-based interface makes documenting project
+                    requirements simple and efficient
                   </p>
                 </div>
               </div>
@@ -703,10 +703,10 @@ const Features = () => (
                   <Smartphone />
                 </div>
                 <div className="flex-grow-1">
-                  <h4 className="mt-0">Fully Responsive</h4>
+                  <h4 className="mt-0">Streamlined Testing Process</h4>
                   <p className="fs-lg">
-                    With mobile, tablet & desktop support it doesn't matter what
-                    device you're using. AdminKit is responsive in all browsers.
+                    Enables the creation, running, and management of test cases
+                    and plans in a user-friendly manner
                   </p>
                 </div>
               </div>
@@ -717,10 +717,10 @@ const Features = () => (
                   <Mail />
                 </div>
                 <div className="flex-grow-1">
-                  <h4 className="mt-0">Dev-to-dev Support</h4>
+                  <h4 className="mt-0">Customized Reports</h4>
                   <p className="fs-lg">
-                    Our themes are supported by specialists who provide quick
-                    and effective support. Usually an email reply takes &lt;24h.
+                    The Report Module empowers users to generate reports in
+                    various formats tailored to different needs
                   </p>
                 </div>
               </div>
@@ -731,10 +731,10 @@ const Features = () => (
                   <Users />
                 </div>
                 <div className="flex-grow-1">
-                  <h4 className="mt-0">Authentication Examples</h4>
+                  <h4 className="mt-0">User-Focused Design</h4>
                   <p className="fs-lg">
-                    The package comes with fully working authentication
-                    examples, including Firebase, Auth0, AWS Cognito and JWT.
+                    Artemiz is designed with the user in mind, ensuring
+                    ease of use and efficiency for different user roles
                   </p>
                 </div>
               </div>
@@ -745,10 +745,10 @@ const Features = () => (
                   <Code />
                 </div>
                 <div className="flex-grow-1">
-                  <h4 className="mt-0">Clean Code</h4>
+                  <h4 className="mt-0">Enhanced Collaboration</h4>
                   <p className="fs-lg">
-                    We strictly follow Bootstrap's guidelines to make your
-                    integration as easy as possible. All code is handwritten.
+                    Collaborative features allow teams to work together seamlessly,
+                    improving teamwork and productivity throughout SDLC
                   </p>
                 </div>
               </div>
@@ -760,10 +760,10 @@ const Features = () => (
                   <DownloadCloud />
                 </div>
                 <div className="flex-grow-1">
-                  <h4 className="mt-0">Regular Updates</h4>
+                  <h4 className="mt-0">Customer Satisfaction</h4>
                   <p className="fs-lg">
-                    From time to time you'll receive an update containing new
-                    components, improvements and bugfixes.
+                    Artemiz aims to enhance user satisfaction and deliver
+                    high-quality software products.
                   </p>
                 </div>
               </div>

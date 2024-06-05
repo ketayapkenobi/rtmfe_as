@@ -415,7 +415,8 @@ function RequirementSpreadsheet({ projectID }) {
                                                 borderRadius: '5px',
                                                 backgroundColor: '#f0f0f0',
                                                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                                                marginRight: '5px' // Added to provide some space between buttons
+                                                marginRight: '5px',
+                                                marginBottom: '5px'
                                             }}
                                         >
                                             <FontAwesomeIcon icon={faPencil} />
@@ -447,12 +448,12 @@ function RequirementSpreadsheet({ projectID }) {
                                                         border: 'none',
                                                         background: 'none',
                                                         cursor: 'pointer',
-                                                        color: '#9fc5e8', // Bootstrap's info button color
-                                                        fontSize: '1em',
-                                                        width: '10px',
-                                                        height: '10px',
-                                                        padding: '0',
-                                                        borderRadius: '50%',
+                                                        color: '#9fc5e8',
+                                                        fontSize: '1.5em',
+                                                        padding: '5px 10px',
+                                                        borderRadius: '5px',
+                                                        backgroundColor: '#f0f0f0',
+                                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                                                     }}
                                                 >
                                                     <FontAwesomeIcon icon={faInfoCircle} />
