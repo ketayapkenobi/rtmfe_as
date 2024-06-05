@@ -40,10 +40,11 @@ const Default = () => {
             <BarChart />
           </Col>
           <Col lg="4" className="d-flex">
-            <Feed />
+            {/* <Feed /> */}
+            <PieChart />
           </Col>
         </Row>
-        <Row>
+        {/* <Row>
           <Col lg="6" xl="4" className="d-flex">
             <Calendar />
           </Col>
@@ -53,7 +54,7 @@ const Default = () => {
           <Col lg="6" xl="4" className="d-flex">
             <Appointments />
           </Col>
-        </Row>
+        </Row> */}
         <Projects />
       </Container>
     </React.Fragment>

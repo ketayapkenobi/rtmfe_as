@@ -1,52 +1,49 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
-
-import { Card, Dropdown } from "react-bootstrap";
-
-import { MoreHorizontal } from "react-feather";
-
+import { Card } from "react-bootstrap";
 import usePalette from "../../../hooks/usePalette";
+import axios from "axios";
 
 const BarChart = () => {
   const palette = usePalette();
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/dashboard/barchart")
+      .then(response => {
+        setProjects(response.data.projects);
+      })
+      .catch(error => {
+        console.error('Error fetching bar chart data:', error);
+      });
+  }, []);
 
   const data = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
+    labels: projects.map((project) => project.projectID),
     datasets: [
       {
-        label: "Last year",
+        label: "Total Requirements",
         backgroundColor: palette.primary,
-        borderColor: palette.primary,
-        hoverBackgroundColor: palette.primary,
-        hoverBorderColor: palette.primary,
-        data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
-        barPercentage: 0.325,
-        categoryPercentage: 0.5,
+        data: projects.map((project) => project.totalRequirements),
+        stack: "stack",
       },
       {
-        label: "This year",
-        backgroundColor: palette["primary-light"],
-        borderColor: palette["primary-light"],
-        hoverBackgroundColor: palette["primary-light"],
-        hoverBorderColor: palette["primary-light"],
-        data: [69, 66, 24, 48, 52, 51, 44, 53, 62, 79, 51, 68],
-        barPercentage: 0.325,
-        categoryPercentage: 0.5,
-        borderRadius: 99,
-        borderSkipped: "bottom",
+        label: "Total Test Cases",
+        backgroundColor: palette.secondary,
+        data: projects.map((project) => project.totalTestCases),
+        stack: "stack",
+      },
+      {
+        label: "Total Test Plans",
+        backgroundColor: palette.success,
+        data: projects.map((project) => project.totalTestPlans),
+        stack: "stack",
+      },
+      {
+        label: "Total Test Executions",
+        backgroundColor: palette.warning,
+        data: projects.map((project) => project.totalTestExecutions),
+        stack: "stack",
       },
     ],
   };
@@ -65,7 +62,7 @@ const BarChart = () => {
           display: false,
         },
         ticks: {
-          stepSize: 20,
+          stepSize: 5,
         },
         stacked: true,
       },
@@ -76,24 +73,25 @@ const BarChart = () => {
         stacked: true,
       },
     },
+    layout: {
+      padding: {
+        left: 10,
+        right: 10,
+        top: 10,
+        bottom: 10,
+      },
+    },
+    elements: {
+      bar: {
+        borderRadius: 10, // Adjust the border radius as needed
+      },
+    },
   };
 
   return (
     <Card className="flex-fill w-100">
       <Card.Header>
-        <div className="card-actions float-end">
-          <Dropdown align="end">
-            <Dropdown.Toggle as="a" bsPrefix="-">
-              <MoreHorizontal />
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item>Action</Dropdown.Item>
-              <Dropdown.Item>Another Action</Dropdown.Item>
-              <Dropdown.Item>Something else here</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-        <Card.Title className="mb-0">Sales / Revenue</Card.Title>
+        <Card.Title className="mb-0">Total Artefacts</Card.Title>
       </Card.Header>
       <Card.Body className="d-flex">
         <div className="align-self-center w-100">

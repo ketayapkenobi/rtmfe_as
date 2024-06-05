@@ -1,22 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Pie } from "react-chartjs-2";
-
 import { Card, Dropdown, Table } from "react-bootstrap";
-
 import { MoreHorizontal } from "react-feather";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquare } from "@fortawesome/free-solid-svg-icons";
-
 import usePalette from "../../../hooks/usePalette";
+import axios from "axios";
 
 const PieChart = () => {
   const palette = usePalette();
+  const [userStats, setUserStats] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/dashboard/piechart")
+      .then(response => {
+        setUserStats(response.data.userStats);
+      })
+      .catch(error => {
+        console.error('Error fetching pie chart data:', error);
+      });
+  }, []);
 
   const data = {
-    labels: ["Social", "Search Engines", "Direct", "Other"],
+    labels: userStats.map((userStat) => userStat.roleName),
     datasets: [
       {
-        data: [260, 125, 54, 146],
+        data: userStats.map((userStat) => userStat.percentage),
         backgroundColor: [
           palette.primary,
           palette.warning,
@@ -39,6 +48,8 @@ const PieChart = () => {
     },
   };
 
+  const colors = ["primary", "warning", "danger", "dark"];
+
   return (
     <Card className="flex-fill w-100">
       <Card.Header>
@@ -54,7 +65,7 @@ const PieChart = () => {
             </Dropdown.Menu>
           </Dropdown>
         </div>
-        <Card.Title className="mb-0">Weekly sales</Card.Title>
+        <Card.Title className="mb-0">User Roles</Card.Title>
       </Card.Header>
       <Card.Body className="d-flex">
         <div className="align-self-center w-100">
@@ -68,43 +79,24 @@ const PieChart = () => {
             <thead>
               <tr>
                 <th>Source</th>
-                <th className="text-end">Revenue</th>
-                <th className="text-end">Value</th>
+                <th className="text-end">Users</th>
+                <th className="text-end">Percentage</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>
-                  <FontAwesomeIcon icon={faSquare} className="text-primary" />{" "}
-                  Direct
-                </td>
-                <td className="text-end">$ 2602</td>
-                <td className="text-end text-success">+43%</td>
-              </tr>
-              <tr>
-                <td>
-                  <FontAwesomeIcon icon={faSquare} className="text-warning" />{" "}
-                  Affiliate
-                </td>
-                <td className="text-end">$ 1253</td>
-                <td className="text-end text-success">+13%</td>
-              </tr>
-              <tr>
-                <td>
-                  <FontAwesomeIcon icon={faSquare} className="text-danger" />{" "}
-                  E-mail
-                </td>
-                <td className="text-end">$ 541</td>
-                <td className="text-end text-success">+24%</td>
-              </tr>
-              <tr>
-                <td>
-                  <FontAwesomeIcon icon={faSquare} className="text-dark" />{" "}
-                  Other
-                </td>
-                <td className="text-end">$ 1465</td>
-                <td className="text-end text-success">+11%</td>
-              </tr>
+              {userStats.map((userStat, index) => (
+                <tr key={index}>
+                  <td>
+                    <FontAwesomeIcon
+                      icon={faSquare}
+                      style={{ color: palette[colors[index]] }}
+                    />{" "}
+                    {userStat.roleName}
+                  </td>
+                  <td className="text-end">{userStat.total}</td>
+                  <td className="text-end text-success">{userStat.percentage.toFixed(2)}%</td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </div>

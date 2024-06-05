@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { Badge, Col, Card, Row } from "react-bootstrap";
-import { DollarSign, ShoppingBag } from "react-feather";
+import { Book, Users } from "react-feather";
 import illustration from "../../../assets/img/illustrations/customer-support.png";
 
 const Statistics = () => {
   const { t } = useTranslation();
   const [userName, setUserName] = useState('');
+  const [projectsCount, setProjectsCount] = useState(0);
+  const [usersCount, setUsersCount] = useState(0);
 
   useEffect(() => {
     // Fetch current user
@@ -21,6 +23,16 @@ const Statistics = () => {
       })
       .catch(error => {
         console.error('Error fetching current user:', error);
+      });
+
+    // Fetch total projects and users
+    axios.get('http://localhost:8000/api/dashboard')
+      .then(response => {
+        setProjectsCount(response.data.projects_count);
+        setUsersCount(response.data.users_count);
+      })
+      .catch(error => {
+        console.error('Error fetching dashboard stats:', error);
       });
   }, []);
 
@@ -54,18 +66,12 @@ const Statistics = () => {
           <Card.Body className=" py-4">
             <div className="d-flex align-items-start">
               <div className="flex-grow-1">
-                <h3 className="mb-2">$ 24.300</h3>
-                <p className="mb-2">Total Earnings</p>
-                <div className="mb-0">
-                  <Badge bg="" className="badge-soft-success me-2">
-                    +5.35%
-                  </Badge>
-                  <span className="text-muted">Since last week</span>
-                </div>
+                <h3 className="mb-2">{projectsCount}</h3>
+                <p className="mb-2">Total Projects</p>
               </div>
               <div className="d-inline-block ms-3">
                 <div className="stat">
-                  <DollarSign className="align-middle text-success" />
+                  <Book className="align-middle text-success" />
                 </div>
               </div>
             </div>
@@ -77,41 +83,12 @@ const Statistics = () => {
           <Card.Body className=" py-4">
             <div className="d-flex align-items-start">
               <div className="flex-grow-1">
-                <h3 className="mb-2">43</h3>
-                <p className="mb-2">Pending Orders</p>
-                <div className="mb-0">
-                  <Badge bg="" className="badge-soft-danger me-2">
-                    -4.25%
-                  </Badge>
-                  <span className="text-muted">Since last week</span>
-                </div>
+                <h3 className="mb-2">{usersCount}</h3>
+                <p className="mb-2">Total Users</p>
               </div>
               <div className="d-inline-block ms-3">
                 <div className="stat">
-                  <ShoppingBag className="align-middle text-success" />
-                </div>
-              </div>
-            </div>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md="6" xl className="d-flex">
-        <Card className="flex-fill">
-          <Card.Body className=" py-4">
-            <div className="d-flex align-items-start">
-              <div className="flex-grow-1">
-                <h3 className="mb-2">$ 18.700</h3>
-                <p className="mb-2">Total Revenue</p>
-                <div className="mb-0">
-                  <Badge bg="" className="badge-soft-success me-2">
-                    +8.65%
-                  </Badge>
-                  <span className="text-muted">Since last week</span>
-                </div>
-              </div>
-              <div className="d-inline-block ms-3">
-                <div className="stat">
-                  <DollarSign className="align-middle text-success" />
+                  <Users className="align-middle text-success" />
                 </div>
               </div>
             </div>

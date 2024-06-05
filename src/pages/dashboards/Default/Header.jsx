@@ -11,7 +11,7 @@ const Header = () => {
         <h3>Dashboard</h3>
       </Col>
 
-      <Col xs="auto" className="ms-auto text-end mt-n1">
+      {/* <Col xs="auto" className="ms-auto text-end mt-n1">
         <Dropdown className="d-inline me-2">
           <Dropdown.Toggle variant="light" className="bg-white shadow-sm">
             <Calendar className="feather align-middle mt-n1" /> Today
@@ -31,7 +31,7 @@ const Header = () => {
         <Button variant="primary" className="shadow-sm">
           <RefreshCw className="feather" />
         </Button>
-      </Col>
+      </Col> */}
     </Row>
   );
 };
