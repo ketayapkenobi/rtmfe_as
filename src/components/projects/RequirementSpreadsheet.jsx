@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPencil, faTrash, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Modal, Button, Table } from 'react-bootstrap';
 
 function RequirementSpreadsheet({ projectID }) {
     const [rows, setRows] = useState(Array.from({ length: 3 }, (_, index) => ({
@@ -18,9 +19,12 @@ function RequirementSpreadsheet({ projectID }) {
     const [priorities, setPriorities] = useState([]);
     const [statuses, setStatuses] = useState([]);
     const [userRole, setUserRole] = useState('');
+    const [userId, setUserId] = useState('');
     const [editedRows, setEditedRows] = useState([]);
     const [maxRequirementNumber, setMaxRequirementNumber] = useState(0);
     const [savedRows, setSavedRows] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedRequirement, setSelectedRequirement] = useState(null);
 
     useEffect(() => {
         const authToken = localStorage.getItem('token');
@@ -39,7 +43,10 @@ function RequirementSpreadsheet({ projectID }) {
             }
         })
             .then(response => response.json())
-            .then(data => setUserRole(data.role))
+            .then(data => {
+                setUserRole(data.role);    // Set the user role
+                setUserId(data.id);    // Set the user ID
+            })
             .catch(error => console.error('Error fetching current user role:', error));
 
         // Generate initial rows based on projectID
@@ -65,7 +72,11 @@ function RequirementSpreadsheet({ projectID }) {
                     description: requirement.description,
                     priority: requirement.priority_name,
                     testCases: requirement.testCases,
-                    status: requirement.status_name
+                    status: requirement.status_name,
+                    created_by: requirement.created_by,
+                    updated_by: requirement.updated_by,
+                    created_at: requirement.created_at,
+                    updated_at: requirement.updated_at
                 })));
 
                 const maxNumber = data.maxRequirementNumber;
@@ -168,6 +179,7 @@ function RequirementSpreadsheet({ projectID }) {
                             priority_id: priorityMap[row.priority],
                             status_id: statusMap[row.status],
                             project_id: projectID,
+                            userId: userId
                         }),
                     })
                         .then(() => {
@@ -190,6 +202,7 @@ function RequirementSpreadsheet({ projectID }) {
                             priority_id: priorityMap[row.priority],
                             status_id: statusMap[row.status],
                             project_id: projectID,
+                            userId: userId
                         }),
                     })
                         .then(response => response.json())
@@ -293,6 +306,16 @@ function RequirementSpreadsheet({ projectID }) {
         }
     };
 
+    const openModal = (requirement) => {
+        setSelectedRequirement(requirement);
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setSelectedRequirement(null);
+    };
+
     return (
         <div>
             <ToastContainer />
@@ -380,6 +403,7 @@ function RequirementSpreadsheet({ projectID }) {
                                     <>
                                         <button
                                             onClick={() => handleTickClick(row.id)}
+                                            title="Save"
                                             style={{
                                                 border: 'none',
                                                 background: 'none',
@@ -396,22 +420,43 @@ function RequirementSpreadsheet({ projectID }) {
                                             <FontAwesomeIcon icon={faPencil} />
                                         </button>
                                         {savedRows.includes(row.requirementId) && (
-                                            <button
-                                                onClick={() => handleDeleteClick(row.id)}
-                                                style={{
-                                                    border: 'none',
-                                                    background: 'none',
-                                                    cursor: 'pointer',
-                                                    color: '#9c0000', // Dark red color
-                                                    fontSize: '1.5em',
-                                                    padding: '5px 10px',
-                                                    borderRadius: '5px',
-                                                    backgroundColor: '#f0f0f0',
-                                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-                                                }}
-                                            >
-                                                <FontAwesomeIcon icon={faTrash} />
-                                            </button>
+                                            <>
+                                                <button
+                                                    onClick={() => handleDeleteClick(row.id)}
+                                                    title="Delete"
+                                                    style={{
+                                                        border: 'none',
+                                                        background: 'none',
+                                                        cursor: 'pointer',
+                                                        color: '#9c0000', // Dark red color
+                                                        fontSize: '1.5em',
+                                                        padding: '5px 10px',
+                                                        borderRadius: '5px',
+                                                        backgroundColor: '#f0f0f0',
+                                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                                        marginRight: '5px'
+                                                    }}
+                                                >
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
+                                                <button
+                                                    onClick={() => openModal(row)}
+                                                    title="Contributors Info"
+                                                    style={{
+                                                        border: 'none',
+                                                        background: 'none',
+                                                        cursor: 'pointer',
+                                                        color: '#9fc5e8', // Bootstrap's info button color
+                                                        fontSize: '1em',
+                                                        width: '10px',
+                                                        height: '10px',
+                                                        padding: '0',
+                                                        borderRadius: '50%',
+                                                    }}
+                                                >
+                                                    <FontAwesomeIcon icon={faInfoCircle} />
+                                                </button>
+                                            </>
                                         )}
                                     </>
                                 )}
@@ -423,6 +468,45 @@ function RequirementSpreadsheet({ projectID }) {
             <button onClick={addRow} style={{ fontSize: '20px', borderRadius: '50%', padding: '5px 10px', marginLeft: '10px', marginTop: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px' }}>
                 <FontAwesomeIcon icon={faPlus} />
             </button>
+            <ToastContainer />
+            <Modal show={showModal} onHide={closeModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Contributors Info</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedRequirement && (
+                        <Table bordered>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Requirement ID</strong></td>
+                                    <td>{selectedRequirement.requirementId}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Created By</strong></td>
+                                    <td>{selectedRequirement.created_by}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Created At</strong></td>
+                                    <td>{selectedRequirement.created_at}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Updated By</strong></td>
+                                    <td>{selectedRequirement.updated_by}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Updated At</strong></td>
+                                    <td>{selectedRequirement.updated_at}</td>
+                                </tr>
+                            </tbody>
+                        </Table>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closeModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }

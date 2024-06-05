@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faPencil, faChevronDown, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPencil, faChevronDown, faTrash, faInfoCircle, faList } from '@fortawesome/free-solid-svg-icons';
 import { Button } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TestCaseSteps from './TestCaseSteps';
 import RelateRequirementsModal from './RelateRequirementsModal';
-
+import { Modal, Table } from 'react-bootstrap';
 
 function TestCasesSpreadsheet({ projectID }) {
     const [rows, setRows] = useState([]);
     const [defaultHeight, setDefaultHeight] = useState(0);
     const [priorities, setPriorities] = useState([]);
     const [statuses, setStatuses] = useState([]);
+    const [userRole, setUserRole] = useState('');
+    const [userId, setUserId] = useState('');
     const [steps, setSteps] = useState([]);
     const [requirements, setRequirements] = useState([]);
     const [showStepsModal, setShowStepsModal] = useState(false);
@@ -22,13 +24,31 @@ function TestCasesSpreadsheet({ projectID }) {
     const [editedRows, setEditedRows] = useState([]);
     const [maxTestCaseNumber, setMaxTestCaseNumber] = useState(0);
     const [savedRows, setSavedRows] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedTestCase, setSelectedTestCase] = useState(null);
 
     useEffect(() => {
+        const authToken = localStorage.getItem('token');
         // Get the default height of the textarea
         const textarea = document.createElement('textarea');
         document.body.appendChild(textarea);
         setDefaultHeight(textarea.scrollHeight);
         document.body.removeChild(textarea);
+
+        // Fetch current user's role
+        fetch('http://localhost:8000/api/current-user', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authToken}`,
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setUserRole(data.role);    // Set the user role
+                setUserId(data.id);    // Set the user ID
+            })
+            .catch(error => console.error('Error fetching current user role:', error));
 
         // Generate initial rows and steps based on projectID
         setRows(Array.from({ length: 3 }, (_, index) => ({
@@ -62,11 +82,15 @@ function TestCasesSpreadsheet({ projectID }) {
                     description: testcase.description,
                     requirements: testcase.requirements,
                     priority: testcase.priority_name,
-                    status: testcase.status_name
+                    status: testcase.status_name,
+                    created_by: testcase.created_by,
+                    updated_by: testcase.updated_by,
+                    created_at: testcase.created_at,
+                    updated_at: testcase.updated_at
                 })));
 
                 const maxNumber = data.maxTestCaseNumber;
-                console.log(maxNumber);
+                // console.log(maxNumber);
                 setMaxTestCaseNumber(maxNumber);
             })
             .catch(error => console.error('Error:', error));
@@ -186,6 +210,7 @@ function TestCasesSpreadsheet({ projectID }) {
                             priority_id: priorityMap[row.priority],
                             status_id: statusMap[row.status],
                             project_id: projectID,
+                            userId: userId
                         }),
                     })
                         .then(() => {
@@ -208,6 +233,7 @@ function TestCasesSpreadsheet({ projectID }) {
                             priority_id: priorityMap[row.priority],
                             status_id: statusMap[row.status],
                             project_id: projectID,
+                            userId: userId
                         }),
                     })
                         .then(response => response.json())
@@ -319,6 +345,17 @@ function TestCasesSpreadsheet({ projectID }) {
         }
     };
 
+    const openModal = (testcase) => {
+        setSelectedTestCase(testcase);
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setSelectedTestCase(null);
+    };
+
+
     return (
         <div>
             <ToastContainer />
@@ -329,7 +366,6 @@ function TestCasesSpreadsheet({ projectID }) {
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Test Case ID</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Test Case Name</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6', width: '30%' }}>Description</th>
-                        <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6', width: '10%' }}>Steps</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Requirements</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Priority</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Status</th>
@@ -343,32 +379,6 @@ function TestCasesSpreadsheet({ projectID }) {
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>{row.testCaseId}</td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}><textarea value={row.testCaseName} onChange={e => handleInputChange(e, row.id, 'testCaseName')} style={{ resize: 'none', overflow: 'hidden', minHeight: `${defaultHeight}px`, width: '100%', border: 'none', outline: 'none' }} /></td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}><textarea value={row.description} onChange={e => handleInputChange(e, row.id, 'description')} style={{ resize: 'none', overflow: 'hidden', width: '100%', border: 'none', outline: 'none' }} /></td>
-                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6', position: 'relative', minHeight: `${defaultHeight}px` }}>
-                                <div style={{ position: 'relative' }}>
-                                    <textarea value={row.steps} onChange={e => handleInputChange(e, row.id, 'steps')} style={{ resize: 'none', overflow: 'hidden', width: '100%', border: 'none', outline: 'none', pointerEvents: 'none', backgroundColor: '#f7f7f7', color: '#212529', minHeight: `${defaultHeight}px` }} />
-                                    <Button
-                                        variant="outline-primary"
-                                        onClick={() => handleAddSteps(row.testCaseId)}
-                                        style={{
-                                            position: 'absolute',
-                                            bottom: '5px',
-                                            left: '50%',
-                                            transform: 'translateX(-50%)',
-                                            padding: '5px 10px',  // Smaller padding
-                                            fontSize: '14px',    // Smaller font size
-                                            borderRadius: '15px', // Smaller border radius
-                                            color: '#000000',
-                                            background: '#aed9e0', // Pastel blue
-                                            border: 'none',
-                                            boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.15)', // Lighter shadow
-                                            cursor: 'pointer',
-                                            transition: 'background 0.3s, transform 0.3s',
-                                        }}
-                                    >
-                                        Steps
-                                    </Button>
-                                </div>
-                            </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
                                 {(Array.isArray(row.requirements) ? row.requirements.join(',') : row.requirements || '')
                                     .split(',')
@@ -403,6 +413,7 @@ function TestCasesSpreadsheet({ projectID }) {
                             <td style={{ textAlign: 'center', padding: '10px' }}>
                                 <button
                                     onClick={() => handleTickClick(row.id)}
+                                    title="Save"
                                     style={{
                                         border: 'none',
                                         background: 'none',
@@ -413,13 +424,32 @@ function TestCasesSpreadsheet({ projectID }) {
                                         borderRadius: '5px',
                                         backgroundColor: '#f0f0f0',
                                         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                                        marginBottom: '10px'
+                                        marginBottom: '5px',
+                                        marginRight: '5px'
                                     }}
                                 >
                                     <FontAwesomeIcon icon={faPencil} />
                                 </button>
                                 <button
+                                    onClick={() => handleAddSteps(row.testCaseId)}
+                                    title="Add Steps"
+                                    style={{
+                                        border: 'none',
+                                        background: 'none',
+                                        cursor: 'pointer',
+                                        color: '#93c47d',
+                                        fontSize: '1.5em',
+                                        padding: '5px 10px',
+                                        borderRadius: '5px',
+                                        backgroundColor: '#f0f0f0',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faList} />
+                                </button>
+                                <button
                                     onClick={() => handleDeleteClick(row.testCaseId)}
+                                    title="Delete"
                                     style={{
                                         border: 'none',
                                         background: 'none',
@@ -429,12 +459,31 @@ function TestCasesSpreadsheet({ projectID }) {
                                         padding: '5px 10px',
                                         borderRadius: '5px',
                                         backgroundColor: '#f0f0f0',
-                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        marginRight: '5px'
                                     }}
                                 >
                                     <FontAwesomeIcon icon={faTrash} />
                                 </button>
+                                <button
+                                    onClick={() => openModal(row)}
+                                    title="Contributors Info"
+                                    style={{
+                                        border: 'none',
+                                        background: 'none',
+                                        cursor: 'pointer',
+                                        color: '#9fc5e8', // Bootstrap's info button color
+                                        fontSize: '1em',
+                                        width: '10px',
+                                        height: '10px',
+                                        padding: '0',
+                                        borderRadius: '50%',
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faInfoCircle} />
+                                </button>
                             </td>
+
                         </tr>
                     ))}
                 </tbody>
@@ -460,6 +509,45 @@ function TestCasesSpreadsheet({ projectID }) {
             <button onClick={addRow} style={{ fontSize: '20px', borderRadius: '50%', padding: '5px 10px', marginLeft: '10px', marginTop: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px' }}>
                 <FontAwesomeIcon icon={faPlus} />
             </button>
+            <ToastContainer />
+            <Modal show={showModal} onHide={closeModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Contributors Info</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedTestCase && (
+                        <Table bordered>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Test Case ID</strong></td>
+                                    <td>{selectedTestCase.testCaseId}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Created By</strong></td>
+                                    <td>{selectedTestCase.created_by}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Created At</strong></td>
+                                    <td>{selectedTestCase.created_at}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Updated By</strong></td>
+                                    <td>{selectedTestCase.updated_by}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Updated At</strong></td>
+                                    <td>{selectedTestCase.updated_at}</td>
+                                </tr>
+                            </tbody>
+                        </Table>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closeModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
