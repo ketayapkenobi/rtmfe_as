@@ -116,6 +116,8 @@ function TestCasesSpreadsheet({ projectID }) {
 
 
     const handleInputChange = (e, rowId, field) => {
+        if (userRole === 'Client') return;
+
         const { value } = e.target;
         setRows(prevRows =>
             prevRows.map(row =>
@@ -369,7 +371,8 @@ function TestCasesSpreadsheet({ projectID }) {
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Requirements</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Priority</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Status</th>
-                        <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Action</th>
+                        {userRole !== 'Client' && <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Action</th>}
+                        {userRole == 'Client' && <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}></th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -377,8 +380,26 @@ function TestCasesSpreadsheet({ projectID }) {
                         <tr key={row.id} style={{ backgroundColor: '#fff', color: '#212529', borderBottom: '1px solid #dee2e6' }}>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>{row.id}</td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>{row.testCaseId}</td>
-                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}><textarea value={row.testCaseName} onChange={e => handleInputChange(e, row.id, 'testCaseName')} style={{ resize: 'none', overflow: 'hidden', minHeight: `${defaultHeight}px`, width: '100%', border: 'none', outline: 'none' }} /></td>
-                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}><textarea value={row.description} onChange={e => handleInputChange(e, row.id, 'description')} style={{ resize: 'none', overflow: 'hidden', width: '100%', border: 'none', outline: 'none' }} /></td>
+                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
+                                <textarea
+                                    value={row.testCaseName}
+                                    onChange={e => handleInputChange(e, row.id, 'testCaseName')}
+                                    disabled={userRole === 'Client'}
+                                    style={{
+                                        resize: 'none', overflow: 'hidden', minHeight: `${defaultHeight}px`, width: '100%', border: 'none', outline: 'none'
+                                    }}
+                                />
+                            </td>
+                            <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
+                                <textarea
+                                    value={row.description}
+                                    onChange={e => handleInputChange(e, row.id, 'description')}
+                                    disabled={userRole === 'Client'}
+                                    style={{
+                                        resize: 'none', overflow: 'hidden', width: '100%', border: 'none', outline: 'none'
+                                    }}
+                                />
+                            </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
                                 {(Array.isArray(row.requirements) ? row.requirements.join(',') : row.requirements || '')
                                     .split(',')
@@ -395,7 +416,15 @@ function TestCasesSpreadsheet({ projectID }) {
                                 </div>
                             </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
-                                <select value={row.priority} onChange={e => handleInputChange(e, row.id, 'priority')} style={{ borderRadius: '5px', padding: '5px', border: '1px solid #ccc', backgroundColor: '#f7f7f7', ...getPriorityColor(row.priority) }}>
+                                <select
+                                    value={row.priority}
+                                    onChange={e => handleInputChange(e, row.id, 'priority')}
+                                    disabled={userRole === 'Client'}
+                                    style={{
+                                        borderRadius: '5px', padding: '5px', border: '1px solid #ccc',
+                                        backgroundColor: userRole === 'Client' ? '#f0f0f0' : '#f7f7f7', ...getPriorityColor(row.priority)
+                                    }}
+                                >
                                     <option value="">Select Priority</option>
                                     {priorities.map(priority => (
                                         <option key={priority.id} value={priority.name} style={{ color: 'black', backgroundColor: getPriorityColor(priority.name).backgroundColor }}>{priority.name}</option>
@@ -403,7 +432,15 @@ function TestCasesSpreadsheet({ projectID }) {
                                 </select>
                             </td>
                             <td style={{ padding: '10px', borderRight: '1px solid #dee2e6' }}>
-                                <select value={row.status} onChange={e => handleInputChange(e, row.id, 'status')} style={{ borderRadius: '5px', padding: '5px', border: '1px solid #ccc', backgroundColor: '#f7f7f7', ...getStatusColor(row.status) }}>
+                                <select
+                                    value={row.status}
+                                    onChange={e => handleInputChange(e, row.id, 'status')}
+                                    disabled={userRole === 'Client'}
+                                    style={{
+                                        borderRadius: '5px', padding: '5px', border: '1px solid #ccc',
+                                        backgroundColor: '#f7f7f7', ...getStatusColor(row.status)
+                                    }}
+                                >
                                     <option value="">Select Status</option>
                                     {statuses.map(status => (
                                         <option key={status.id} value={status.name} style={{ color: 'black', backgroundColor: getStatusColor(status.name).backgroundColor }}>{status.name}</option>
@@ -411,79 +448,82 @@ function TestCasesSpreadsheet({ projectID }) {
                                 </select>
                             </td>
                             <td style={{ textAlign: 'center', padding: '10px' }}>
-                                <button
-                                    onClick={() => handleTickClick(row.id)}
-                                    title="Save"
-                                    style={{
-                                        border: 'none',
-                                        background: 'none',
-                                        cursor: 'pointer',
-                                        color: isRowEdited(row.id) ? 'orange' : '#007bff',
-                                        fontSize: '1.5em',
-                                        padding: '5px 10px',
-                                        borderRadius: '5px',
-                                        backgroundColor: '#f0f0f0',
-                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                                        marginBottom: '5px',
-                                        marginRight: '5px'
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faPencil} />
-                                </button>
-                                <button
-                                    onClick={() => handleAddSteps(row.testCaseId)}
-                                    title="Add Steps"
-                                    style={{
-                                        border: 'none',
-                                        background: 'none',
-                                        cursor: 'pointer',
-                                        color: '#93c47d',
-                                        fontSize: '1.5em',
-                                        padding: '5px 10px',
-                                        borderRadius: '5px',
-                                        backgroundColor: '#f0f0f0',
-                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faList} />
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteClick(row.testCaseId)}
-                                    title="Delete"
-                                    style={{
-                                        border: 'none',
-                                        background: 'none',
-                                        cursor: 'pointer',
-                                        color: '#9c0000',
-                                        fontSize: '1.5em',
-                                        padding: '5px 10px',
-                                        borderRadius: '5px',
-                                        backgroundColor: '#f0f0f0',
-                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                                        marginRight: '5px'
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faTrash} />
-                                </button>
-                                <button
-                                    onClick={() => openModal(row)}
-                                    title="Contributors Info"
-                                    style={{
-                                        border: 'none',
-                                        background: 'none',
-                                        cursor: 'pointer',
-                                        color: '#9fc5e8', // Bootstrap's info button color
-                                        fontSize: '1em',
-                                        width: '10px',
-                                        height: '10px',
-                                        padding: '0',
-                                        borderRadius: '50%',
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faInfoCircle} />
-                                </button>
+                                {userRole !== 'Client' && (
+                                    <>
+                                        <button
+                                            onClick={() => handleTickClick(row.id)}
+                                            title="Save"
+                                            style={{
+                                                border: 'none',
+                                                background: 'none',
+                                                cursor: 'pointer',
+                                                color: isRowEdited(row.id) ? 'orange' : '#007bff',
+                                                fontSize: '1.5em',
+                                                padding: '5px 10px',
+                                                borderRadius: '5px',
+                                                backgroundColor: '#f0f0f0',
+                                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                                marginBottom: '5px',
+                                                marginRight: '5px'
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faPencil} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleAddSteps(row.testCaseId)}
+                                            title="Add Steps"
+                                            style={{
+                                                border: 'none',
+                                                background: 'none',
+                                                cursor: 'pointer',
+                                                color: '#93c47d',
+                                                fontSize: '1.5em',
+                                                padding: '5px 10px',
+                                                borderRadius: '5px',
+                                                backgroundColor: '#f0f0f0',
+                                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faList} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteClick(row.testCaseId)}
+                                            title="Delete"
+                                            style={{
+                                                border: 'none',
+                                                background: 'none',
+                                                cursor: 'pointer',
+                                                color: '#9c0000',
+                                                fontSize: '1.5em',
+                                                padding: '5px 10px',
+                                                borderRadius: '5px',
+                                                backgroundColor: '#f0f0f0',
+                                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                                marginRight: '5px'
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </button>
+                                        <button
+                                            onClick={() => openModal(row)}
+                                            title="Contributors Info"
+                                            style={{
+                                                border: 'none',
+                                                background: 'none',
+                                                cursor: 'pointer',
+                                                color: '#9fc5e8', // Bootstrap's info button color
+                                                fontSize: '1em',
+                                                width: '10px',
+                                                height: '10px',
+                                                padding: '0',
+                                                borderRadius: '50%',
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faInfoCircle} />
+                                        </button>
+                                    </>
+                                )}
                             </td>
-
                         </tr>
                     ))}
                 </tbody>

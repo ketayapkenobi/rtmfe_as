@@ -329,7 +329,8 @@ function RequirementSpreadsheet({ projectID }) {
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Test Cases</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Test Priority</th>
                         <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Status</th>
-                        <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Action</th>
+                        {userRole !== 'Client' && <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}>Action</th>}
+                        {userRole == 'Client' && <th style={{ padding: '10px', borderBottom: '2px solid #dee2e6' }}></th>}
                     </tr>
                 </thead>
                 <tbody>
