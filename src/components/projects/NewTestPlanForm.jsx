@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, ListGroup } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
+import Select from 'react-select';
 
 import { API_URL } from "../../Api";
 
@@ -34,7 +35,11 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
                 .then(data => {
                     console.log('Test cases data:', data);
                     if (Array.isArray(data.testcases)) {
-                        setTestCases(data.testcases);
+                        const formattedTestCases = data.testcases.map(testCase => ({
+                            value: testCase.testcaseID,
+                            label: `${testCase.testcaseID} - ${testCase.name}`
+                        }));
+                        setTestCases(formattedTestCases);
                     } else {
                         console.error('Test cases data is not an array:', data);
                     }
@@ -52,19 +57,12 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
         }));
     };
 
-    const handleTestCaseChange = (testCaseID) => {
-        const isSelected = newTestPlan.selectedTestCases.includes(testCaseID);
-        if (isSelected) {
-            setNewTestPlan(prevState => ({
-                ...prevState,
-                selectedTestCases: prevState.selectedTestCases.filter(id => id !== testCaseID)
-            }));
-        } else {
-            setNewTestPlan(prevState => ({
-                ...prevState,
-                selectedTestCases: [...prevState.selectedTestCases, testCaseID]
-            }));
-        }
+    const handleTestCaseChange = (selectedOptions) => {
+        const selectedTestCases = selectedOptions ? selectedOptions.map(option => option.value) : [];
+        setNewTestPlan(prevState => ({
+            ...prevState,
+            selectedTestCases
+        }));
     };
 
     const handleSubmit = (e) => {
@@ -194,19 +192,13 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
                     </Form.Group>
                     <hr />
                     <h5>Test Cases:</h5>
-                    <ListGroup>
-                        {testCases.map(testCase => (
-                            <ListGroup.Item key={testCase.id}>
-                                <Form.Check
-                                    type="checkbox"
-                                    id={`testcase-${testCase.id}`}
-                                    label={`${testCase.testcaseID} - ${testCase.name}`}
-                                    checked={newTestPlan.selectedTestCases.includes(testCase.testcaseID)}
-                                    onChange={() => handleTestCaseChange(testCase.testcaseID)}
-                                />
-                            </ListGroup.Item>
-                        ))}
-                    </ListGroup>
+                    <Select
+                        options={testCases}
+                        isMulti
+                        onChange={handleTestCaseChange}
+                        value={testCases.filter(testCase => newTestPlan.selectedTestCases.includes(testCase.value))}
+                        classNamePrefix="react-select"
+                    />
                     <Button variant="primary" type="submit" style={{ marginTop: '10px' }}>Create</Button>
                 </Form>
             </Modal.Body>
@@ -215,4 +207,3 @@ function NewTestPlanForm({ projectID, show, onHide, onSubmit }) {
 }
 
 export default NewTestPlanForm;
-

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import Select from 'react-select';
 
 import { API_URL } from "../../Api";
 
@@ -10,8 +11,6 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
     const [error, setError] = useState('');
     const [users, setUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const usersPerPage = 8; // Number of users per page
 
     useEffect(() => {
         fetch(`${API_URL}/users`)
@@ -20,19 +19,13 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
             .catch(error => console.error('Error:', error));
     }, []);
 
-    const handleUserCheckboxChange = (userId) => {
-        setSelectedUsers(prevSelectedUsers => {
-            if (prevSelectedUsers.includes(userId)) {
-                return prevSelectedUsers.filter(id => id !== userId);
-            } else {
-                return [...prevSelectedUsers, userId];
-            }
-        });
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
+        // console.log(selectedUsers);
         setError(''); // Reset error message
+
+        const selectedUserIDs = selectedUsers.map(user => user.value);
+        console.log(selectedUserIDs);
 
         // Check if projectID already exists
         fetch(`${API_URL}/projects/check/${projectID}`, {
@@ -49,7 +42,7 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ projectID, projectName, projectDesc, selectedUsers }),
+                        body: JSON.stringify({ projectID, projectName, projectDesc, selectedUsers: selectedUserIDs }),
                     });
                 }
             })
@@ -64,24 +57,6 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
             })
             .catch(error => setError(error.message));
     };
-
-    // Calculate the current users to display based on pagination
-    const getCurrentPageUsers = () => {
-        // Paginate the users
-        const indexOfLastUser = currentPage * usersPerPage;
-        const indexOfFirstUser = indexOfLastUser - usersPerPage;
-        const currentPageUsers = users.slice(indexOfFirstUser, indexOfLastUser);
-
-        // Divide the users into two columns
-        const midIndex = Math.ceil(currentPageUsers.length / 2);
-        const column1 = currentPageUsers.slice(0, midIndex);
-        const column2 = currentPageUsers.slice(midIndex);
-
-        return { column1, column2 };
-    };
-
-    // Handle pagination
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <Modal show={show} onHide={handleClose}>
@@ -124,45 +99,17 @@ const NewProjectForm = ({ show, handleClose, handleAddProject }) => {
                     </Form.Group>
                     <Form.Group controlId="formSelectedUsers">
                         <Form.Label>Assign users to this project:</Form.Label>
-                        <div style={{ display: 'flex' }}>
-                            <div style={{ flex: 1 }}>
-                                {getCurrentPageUsers().column1.map(user => (
-                                    <Form.Check
-                                        key={user.id}
-                                        type="checkbox"
-                                        label={user.name}
-                                        checked={selectedUsers.includes(user.id)}
-                                        onChange={() => handleUserCheckboxChange(user.id)}
-                                        style={{ marginRight: '10px' }}
-                                    />
-                                ))}
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                {getCurrentPageUsers().column2.map(user => (
-                                    <Form.Check
-                                        key={user.id}
-                                        type="checkbox"
-                                        label={user.name}
-                                        checked={selectedUsers.includes(user.id)}
-                                        onChange={() => handleUserCheckboxChange(user.id)}
-                                        style={{ marginRight: '10px' }}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                        <Select
+                            options={users.map(user => ({
+                                value: user.id,
+                                label: user.name
+                            }))}
+                            isMulti
+                            value={selectedUsers}
+                            onChange={setSelectedUsers}
+                            classNamePrefix="react-select"
+                        />
                     </Form.Group>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', marginBottom: '10px' }}>
-                        {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, i) => (
-                            <Button
-                                key={i}
-                                onClick={() => paginate(i + 1)}
-                                variant={i + 1 === currentPage ? 'primary' : 'secondary'}
-                                style={{ margin: '0 5px' }}
-                            >
-                                {i + 1}
-                            </Button>
-                        ))}
-                    </div>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
                             Close

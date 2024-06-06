@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Card, Button, Modal, ListGroup } from 'react-bootstrap';
+import { Form, Card, Button, Modal } from 'react-bootstrap';
 import NewTestPlanForm from './NewTestPlanForm';
+import Select from 'react-select';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -49,7 +50,10 @@ function TestPlan({ projectID }) {
         fetch(`${API_URL}/testplans/${testplanID}/related-testcases`)
             .then(response => response.json())
             .then(data => {
-                setRelatedTestCases(data.relatedTestCases);
+                setRelatedTestCases(data.relatedTestCases.map(testCaseID => ({
+                    value: testCaseID,
+                    label: `${testCaseID} - ${allTestCases.find(tc => tc.testcaseID === testCaseID)?.name || 'Unknown'}`
+                })));
                 setSelectedTestPlanID(testplanID);
             })
             .catch(error => console.error('Error:', error));
@@ -61,7 +65,7 @@ function TestPlan({ projectID }) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ testcase_ids: relatedTestCases })
+            body: JSON.stringify({ testcase_ids: relatedTestCases.map(tc => tc.value) })
         })
             .then(response => response.json())
             .then(data => {
@@ -125,30 +129,23 @@ function TestPlan({ projectID }) {
                 </Modal.Header>
                 <Modal.Body>
                     <h5>All Test Cases in Project</h5>
-                    <ListGroup>
-                        {allTestCases.map(testCase => (
-                            <ListGroup.Item key={testCase.id}>
-                                <Form.Check
-                                    type="checkbox"
-                                    label={`${testCase.testcaseID} - ${testCase.name}`}
-                                    checked={relatedTestCases.includes(testCase.testcaseID)}
-                                    onChange={() => {
-                                        if (relatedTestCases.includes(testCase.testcaseID)) {
-                                            setRelatedTestCases(relatedTestCases.filter(id => id !== testCase.testcaseID));
-                                        } else {
-                                            setRelatedTestCases([...relatedTestCases, testCase.testcaseID]);
-                                        }
-                                    }}
-                                />
-                            </ListGroup.Item>
-                        ))}
-                    </ListGroup>
+                    <Select
+                        options={allTestCases.map(testCase => ({
+                            value: testCase.testcaseID,
+                            label: `${testCase.testcaseID} - ${testCase.name}`
+                        }))}
+                        isMulti
+                        value={relatedTestCases}
+                        onChange={setRelatedTestCases}
+                        classNamePrefix="react-select"
+                    />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setSelectedTestPlanID(null)}>Close</Button>
                     <Button variant="primary" onClick={handleSaveRelatedTestCases}>Save Changes</Button>
                 </Modal.Footer>
             </Modal>
+            <ToastContainer />
         </div>
     );
 }

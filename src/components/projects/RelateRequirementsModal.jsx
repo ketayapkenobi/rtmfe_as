@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
+import Select from 'react-select';
 
 function RelateRequirementsModal({ show, handleClose, requirements, testcaseID, updateRequirements, selectedRequirements }) {
-    const [checkedRequirements, setCheckedRequirements] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState([]);
 
     useEffect(() => {
         if (show && selectedRequirements) {
-            setCheckedRequirements(selectedRequirements);
+            const initialSelectedOptions = selectedRequirements.map(requirementID => {
+                const requirement = requirements.find(req => req.requirementID === requirementID);
+                return requirement ? { value: requirement.requirementID, label: `${requirement.requirementID} - ${requirement.name}` } : null;
+            }).filter(option => option !== null);
+            setSelectedOptions(initialSelectedOptions);
         }
-    }, [show, selectedRequirements]);
-
-    const handleCheckboxChange = (requirementID) => {
-        if (checkedRequirements.includes(requirementID)) {
-            setCheckedRequirements(checkedRequirements.filter(req => req !== requirementID));
-        } else {
-            setCheckedRequirements([...checkedRequirements, requirementID]);
-        }
-    };
+    }, [show, selectedRequirements, requirements]);
 
     const handleSaveChanges = () => {
-        updateRequirements(testcaseID, checkedRequirements);
+        const updatedRequirements = selectedOptions.map(option => option.value);
+        updateRequirements(testcaseID, updatedRequirements);
         handleClose();
     };
 
@@ -29,16 +27,16 @@ function RelateRequirementsModal({ show, handleClose, requirements, testcaseID, 
                 <Modal.Title>Select Requirements for Test Case {testcaseID}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {requirements.map(requirement => (
-                    <Form.Check
-                        key={requirement.id}
-                        type="checkbox"
-                        id={`requirement-${requirement.id}`}
-                        label={`${requirement.requirementID} - ${requirement.name}`}
-                        checked={checkedRequirements.includes(requirement.requirementID)}
-                        onChange={() => handleCheckboxChange(requirement.requirementID)}
-                    />
-                ))}
+                <Select
+                    options={requirements.map(requirement => ({
+                        value: requirement.requirementID,
+                        label: `${requirement.requirementID} - ${requirement.name}`
+                    }))}
+                    isMulti
+                    value={selectedOptions}
+                    onChange={setSelectedOptions}
+                    classNamePrefix="react-select"
+                />
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
@@ -50,6 +48,6 @@ function RelateRequirementsModal({ show, handleClose, requirements, testcaseID, 
             </Modal.Footer>
         </Modal>
     );
-};
+}
 
 export default RelateRequirementsModal;
