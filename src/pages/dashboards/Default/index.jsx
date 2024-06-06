@@ -6,9 +6,11 @@ import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import Appointments from "./Appointments";
 import BarChart from "./BarChart";
+import BarChartReq from "./BarChartReq";
 import Calendar from "./Calendar";
 import Feed from "./Feed";
 import PieChart from "./PieChart";
+import PieChartReq from "./PieChartReq";
 import Projects from "./Projects";
 import Statistics from "./Statistics";
 
@@ -37,10 +39,17 @@ const Default = () => {
         <Statistics />
         <Row>
           <Col lg="8" className="d-flex">
+            <BarChartReq />
+          </Col>
+          <Col lg="4" className="d-flex">
+            <PieChartReq />
+          </Col>
+        </Row>
+        <Row>
+          <Col lg="8" className="d-flex">
             <BarChart />
           </Col>
           <Col lg="4" className="d-flex">
-            {/* <Feed /> */}
             <PieChart />
           </Col>
         </Row>

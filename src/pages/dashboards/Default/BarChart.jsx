@@ -24,25 +24,25 @@ const BarChart = () => {
     labels: projects.map((project) => project.projectID),
     datasets: [
       {
-        label: "Total Requirements",
+        label: "Requirements",
         backgroundColor: palette.primary,
         data: projects.map((project) => project.totalRequirements),
         stack: "stack",
       },
       {
-        label: "Total Test Cases",
+        label: "Test Cases",
         backgroundColor: palette.secondary,
         data: projects.map((project) => project.totalTestCases),
         stack: "stack",
       },
       {
-        label: "Total Test Plans",
+        label: "Test Plans",
         backgroundColor: palette.success,
         data: projects.map((project) => project.totalTestPlans),
         stack: "stack",
       },
       {
-        label: "Total Test Executions",
+        label: "Test Executions",
         backgroundColor: palette.warning,
         data: projects.map((project) => project.totalTestExecutions),
         stack: "stack",
@@ -55,7 +55,7 @@ const BarChart = () => {
     cornerRadius: 15,
     plugins: {
       legend: {
-        display: false,
+        display: true,
       },
     },
     scales: {
