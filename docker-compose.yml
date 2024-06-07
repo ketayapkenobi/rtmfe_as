@@ -1,31 +1,32 @@
 version: "3.8"
 
 networks:
-  artemiz-fe-develop:
+  bolt-dashboard-sta:
 
 services:
   site:
     env_file:
-    - .env
+      - .env
     build:
       context: ./dockerfiles
       dockerfile: nginx.dockerfile
       args:
         - UID=${DOCKER_UID:-1000}
         - GID=${DOCKER_GID:-1000}
-    container_name: artemiz-fe-nginx
+    container_name: artemiz-frontend-nginx
     ports:
       - ${DOCKER_NGINX_PORT}:80
     volumes:
-      - ./:/var/www/html:delegated    
+      - ./:/var/www/html:delegated
     networks:
-      - artemiz-fe-develop
+      - artemiz
+
   npm:
     image: node:lts-alpine3.18
-    container_name: artemiz-fe-npm
+    container_name: artemiz-frontend-npm
     volumes:
-      - ./:/var/www/html:delegated    
+      - ./:/var/www/html:delegated
     working_dir: /var/www/html
     entrypoint: ["npm"]
     networks:
-      - artemiz-fe-develop
+      - artemi
