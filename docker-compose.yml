@@ -1,10 +1,9 @@
 version: "3.8"
 
 networks:
-  bolt-dashboard-sta:
 
 services:
-  site:
+  artemiz_site:
     env_file:
       - .env
     build:
@@ -21,7 +20,7 @@ services:
     networks:
       - artemiz
 
-  npm:
+  artemiz_npm:
     image: node:lts-alpine3.18
     container_name: artemiz-frontend-npm
     volumes:
@@ -29,4 +28,4 @@ services:
     working_dir: /var/www/html
     entrypoint: ["npm"]
     networks:
-      - artemi
+      - artemiz
