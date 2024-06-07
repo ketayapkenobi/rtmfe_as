@@ -4,14 +4,14 @@ import { useTranslation } from "react-i18next";
 import { Badge, Col, Card, Row } from "react-bootstrap";
 import { Book, Users } from "react-feather";
 import illustration from "../../../assets/img/illustrations/customer-support.png";
-
 import { API_URL } from "../../../Api";
 
-const Statistics = () => {
+const Statistics = ({ userID }) => {
   const { t } = useTranslation();
   const [userName, setUserName] = useState('');
   const [projectsCount, setProjectsCount] = useState(0);
   const [usersCount, setUsersCount] = useState(0);
+  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
     // Fetch current user
@@ -22,6 +22,7 @@ const Statistics = () => {
     })
       .then(response => {
         setUserName(response.data.name);
+        setUserRole(response.data.role); // assuming role is available in the response
       })
       .catch(error => {
         console.error('Error fetching current user:', error);
@@ -63,40 +64,44 @@ const Statistics = () => {
           </Card.Body>
         </Card>
       </Col>
-      <Col md="6" xl className="d-flex">
-        <Card className="flex-fill">
-          <Card.Body className=" py-4">
-            <div className="d-flex align-items-start">
-              <div className="flex-grow-1">
-                <h3 className="mb-2">{projectsCount}</h3>
-                <p className="mb-2">Total Projects</p>
-              </div>
-              <div className="d-inline-block ms-3">
-                <div className="stat">
-                  <Book className="align-middle text-success" />
+      {userRole !== 'Client' && (
+        <>
+          <Col md="6" xl className="d-flex">
+            <Card className="flex-fill">
+              <Card.Body className="py-4">
+                <div className="d-flex align-items-start">
+                  <div className="flex-grow-1">
+                    <h3 className="mb-2">{projectsCount}</h3>
+                    <p className="mb-2">Total Projects</p>
+                  </div>
+                  <div className="d-inline-block ms-3">
+                    <div className="stat">
+                      <Book className="align-middle text-success" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md="6" xl className="d-flex">
-        <Card className="flex-fill">
-          <Card.Body className=" py-4">
-            <div className="d-flex align-items-start">
-              <div className="flex-grow-1">
-                <h3 className="mb-2">{usersCount}</h3>
-                <p className="mb-2">Total Users</p>
-              </div>
-              <div className="d-inline-block ms-3">
-                <div className="stat">
-                  <Users className="align-middle text-success" />
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md="6" xl className="d-flex">
+            <Card className="flex-fill">
+              <Card.Body className="py-4">
+                <div className="d-flex align-items-start">
+                  <div className="flex-grow-1">
+                    <h3 className="mb-2">{usersCount}</h3>
+                    <p className="mb-2">Total Users</p>
+                  </div>
+                  <div className="d-inline-block ms-3">
+                    <div className="stat">
+                      <Users className="align-middle text-success" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </Card.Body>
-        </Card>
-      </Col>
+              </Card.Body>
+            </Card>
+          </Col>
+        </>
+      )}
     </Row>
   );
 };

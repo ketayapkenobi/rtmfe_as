@@ -6,12 +6,12 @@ import axios from "axios";
 
 import { API_URL } from "../../../Api";
 
-const BarChart = () => {
+const BarChart = ({ userID }) => {
   const palette = usePalette();
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    axios.get(`${API_URL}/dashboard/barchart`)
+    axios.get(`${API_URL}/dashboard/barchart/${userID}`)
       .then(response => {
         setProjects(response.data.projects);
       })

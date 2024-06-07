@@ -72,10 +72,12 @@ const TestPlanBarChart = ({
                 const imgData = canvas.toDataURL('image/png');
 
                 // Calculate aspect ratio
-                const imgWidth = 180; // Desired width in PDF
+                const imgWidth = 250; // Desired width in PDF
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                const pdf = new jsPDF();
+                const pdf = new jsPDF({
+                    orientation: 'landscape', // Set the orientation to landscape
+                });
 
                 // Title
                 pdf.setFontSize(20);

@@ -13,6 +13,7 @@ function TestPlan({ projectID }) {
     const [relatedTestCases, setRelatedTestCases] = useState([]);
     const [selectedTestPlanID, setSelectedTestPlanID] = useState(null);
     const [allTestCases, setAllTestCases] = useState([]);
+    const [userRole, setUserRole] = useState("");
 
     useEffect(() => {
         fetch(`${API_URL}/projects/${projectID}/testplans`)
@@ -25,6 +26,33 @@ function TestPlan({ projectID }) {
             .then(data => setAllTestCases(data.testcases))
             .catch(error => console.error('Error:', error));
     }, [projectID]);
+
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+            try {
+                const response = await fetch(`${API_URL}/current-user`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch current user');
+                }
+
+                const userData = await response.json();
+                setUserRole(userData.role);
+                console.log(userRole);
+            } catch (error) {
+                console.error('Error fetching current user:', error);
+                // Handle error here, e.g., show an error message or retry the fetch
+            }
+        };
+
+        fetchCurrentUser();
+    }, []);
 
     const handleCreateTestPlan = (newTestPlan) => {
         setTestPlans([...testPlans, newTestPlan]);
@@ -97,9 +125,11 @@ function TestPlan({ projectID }) {
     return (
         <div>
             <h3>Test Plans</h3>
-            <div className="d-flex justify-content-end mb-3">
-                <Button variant="primary" onClick={() => setShowModal(true)}>Create Test Plan</Button>
-            </div>
+            {userRole !== 'Client' && (
+                <div className="d-flex justify-content-end mb-3">
+                    <Button variant="primary" onClick={() => setShowModal(true)}>Create Test Plan</Button>
+                </div>
+            )}
 
             <NewTestPlanForm
                 projectID={projectID}

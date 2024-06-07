@@ -7,7 +7,7 @@ import TestPlanBarChart from "./TestPlanBarChart";
 
 import { API_URL } from "../../Api";
 
-const TE_GenerateReport = () => {
+const TE_GenerateReport = ({ userID }) => {
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
     const [selectedTestExecution, setSelectedTestExecution] = useState("");
@@ -26,7 +26,7 @@ const TE_GenerateReport = () => {
     }, []);
 
     const fetchProjects = () => {
-        fetch(`${API_URL}/projects`)
+        fetch(`${API_URL}/projects/current-user/${userID}`)
             .then((response) => response.json())
             .then((data) => {
                 setProjects(data);

@@ -15,131 +15,28 @@ import {
   File,
 } from "react-feather";
 
-const pagesSection = [
+const getPagesSection = (userRole) => [
   {
     href: "/dashboard/default",
     icon: Sliders,
     title: "Dashboards",
-    // badge: "5",
-    // children: [
-    //   {
-    //     href: "/dashboard/default",
-    //     title: "Default",
-    //   },
-    //   {
-    //     href: "/dashboard/analytics",
-    //     title: "Analytics",
-    //   },
-    //   {
-    //     href: "/dashboard/saas",
-    //     title: "SaaS",
-    //   },
-    //   {
-    //     href: "/dashboard/social",
-    //     title: "Social",
-    //   },
-    //   {
-    //     href: "/dashboard/crypto",
-    //     title: "Crypto",
-    //   },
-    // ],
   },
   {
-    // Sidebar project sementara
     href: "/pages/projects",
     icon: Layout,
     title: "Projects",
-    // badge: "5",
   },
   {
     href: "/pages/report",
     icon: File,
     title: "Report",
   },
-  {
-    // Sidebar project sementara
+  userRole !== "Client" && {
     href: "/pages/team-members",
     icon: Users,
     title: "Team Members",
-    // badge: "5",
   },
-  // {
-  //   href: "/pages",
-  //   icon: Layout,
-  //   title: "Pages",
-  //   children: [
-  //     {
-  //       href: "/pages/profile",
-  //       title: "Profile",
-  //     },
-  //     {
-  //       href: "/pages/settings",
-  //       title: "Settings",
-  //     },
-  //     {
-  //       href: "/pages/clients",
-  //       title: "Clients",
-  //     },
-  //     // {
-  //     //   href: "/pages/projects",
-  //     //   title: "Projects",
-  //     // },
-  //     {
-  //       href: "/pages/invoice",
-  //       title: "Invoice",
-  //     },
-  //     {
-  //       href: "/pages/pricing",
-  //       title: "Pricing",
-  //     },
-  //     {
-  //       href: "/pages/tasks",
-  //       title: "Tasks",
-  //     },
-  //     {
-  //       href: "/pages/chat",
-  //       title: "Chat",
-  //       badge: "New",
-  //     },
-  //     {
-  //       href: "/pages/blank",
-  //       title: "Blank Page",
-  //     },
-  //   ],
-  // },
-  // {
-  //   href: "/auth",
-  //   icon: Users,
-  //   title: "Auth",
-  //   children: [
-  //     {
-  //       href: "/auth/sign-in",
-  //       title: "Sign In",
-  //     },
-  //     {
-  //       href: "/auth/sign-up",
-  //       title: "Sign Up",
-  //     },
-  //     {
-  //       href: "/auth/reset-password",
-  //       title: "Reset Password",
-  //     },
-  //     {
-  //       href: "/auth/404",
-  //       title: "404 Page",
-  //     },
-  //     {
-  //       href: "/auth/500",
-  //       title: "500 Page",
-  //     },
-  //   ],
-  // },
-  // {
-  //   href: "/docs/introduction",
-  //   icon: BookOpen,
-  //   title: "Documentation",
-  // },
-];
+].filter(Boolean);
 
 const componentsSection = [
   {
@@ -376,11 +273,12 @@ const pluginsSection = [
   },
 ];
 
-const navItems = [
+const getNavItems = (userRole) => [
   {
     title: "Pages",
-    pages: pagesSection,
+    pages: getPagesSection(userRole),
   },
+  // Uncomment if needed
   // {
   //   title: "Tools & Components",
   //   pages: componentsSection,
@@ -391,4 +289,4 @@ const navItems = [
   // },
 ];
 
-export default navItems;
+export default getNavItems;

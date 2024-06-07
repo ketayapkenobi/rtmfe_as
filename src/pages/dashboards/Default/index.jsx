@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,8 @@ import PieChartReq from "./PieChartReq";
 import Projects from "./Projects";
 import Statistics from "./Statistics";
 
+import { API_URL } from "../../../Api";
+
 // Mock function to check if a user is logged in
 // Replace this with your actual authentication logic
 const isUserLoggedIn = () => {
@@ -24,12 +26,44 @@ const isUserLoggedIn = () => {
 
 const Default = () => {
   const navigate = useNavigate();
+  const [userID, setUserID] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    if (!isUserLoggedIn()) {
-      navigate('/auth/sign-in');
-    }
-  }, []); // Simplified dependency array
+    const fetchData = async () => {
+      if (!isUserLoggedIn()) {
+        navigate('/auth/sign-in');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/current-user`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch current user");
+        }
+
+        const userData = await response.json();
+        setUserID(userData.userID);
+        setUserRole(userData.role); // assuming role is available in the response
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+        // Handle error here, e.g., show an error message or retry the fetch
+      }
+    };
+
+    fetchData();
+  }, [navigate]);
+
+  if (userID === null) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <React.Fragment>
@@ -39,32 +73,31 @@ const Default = () => {
         <Statistics />
         <Row>
           <Col lg="8" className="d-flex">
-            <BarChartReq />
+            <BarChartReq userID={userID} />
           </Col>
-          <Col lg="4" className="d-flex">
-            <PieChartReq />
-          </Col>
+          {userRole !== 'Client' ? (
+            <Col lg="4" className="d-flex">
+              <PieChartReq />
+            </Col>
+          ) : (
+            <Col lg="4" className="d-flex">
+              <Projects userID={userID} />
+            </Col>
+          )}
         </Row>
         <Row>
           <Col lg="8" className="d-flex">
-            <BarChart />
+            <BarChart userID={userID} />
           </Col>
-          <Col lg="4" className="d-flex">
-            <PieChart />
-          </Col>
+          {userRole !== 'Client' && (
+            <Col lg="4" className="d-flex">
+              <PieChart />
+            </Col>
+          )}
         </Row>
-        {/* <Row>
-          <Col lg="6" xl="4" className="d-flex">
-            <Calendar />
-          </Col>
-          <Col lg="6" xl="4" className="d-flex">
-            <PieChart />
-          </Col>
-          <Col lg="6" xl="4" className="d-flex">
-            <Appointments />
-          </Col>
-        </Row> */}
-        <Projects />
+        {userRole !== 'Client' && (
+          <Projects userID={userID} />
+        )}
       </Container>
     </React.Fragment>
   );

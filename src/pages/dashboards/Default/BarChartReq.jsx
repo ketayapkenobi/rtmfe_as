@@ -7,17 +7,17 @@ import usePalette from "../../../hooks/usePalette";
 
 import { API_URL } from "../../../Api";
 
-const BarChart = () => {
+const BarChart = ({ userID }) => {
   const [projects, setProjects] = useState([]);
   const palette = usePalette();
 
   useEffect(() => {
-    axios.get(`${API_URL}/dashboard/barchart-req`)
+    axios.get(`${API_URL}/dashboard/barchart-req/${userID}`)
       .then(response => {
         setProjects(response.data.coverageStats);
       })
       .catch(error => {
-        console.error('Error fetching bar chart data:', error);
+        console.error('Error fetching bar chart req data:', error);
       });
   }, []);
 

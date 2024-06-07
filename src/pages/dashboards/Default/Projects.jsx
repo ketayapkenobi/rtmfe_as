@@ -5,12 +5,12 @@ import { MoreHorizontal } from "react-feather";
 
 import { API_URL } from "../../../Api";
 
-const Projects = () => {
+const Projects = ({ userID }) => {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
     // Fetch projects
-    axios.get(`${API_URL}/projects`)
+    axios.get(`${API_URL}/projects/current-user/${userID}`)
       .then(response => {
         setProjects(response.data);
       })

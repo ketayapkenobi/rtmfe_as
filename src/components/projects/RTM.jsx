@@ -7,7 +7,7 @@ import html2pdf from "html2pdf.js";
 
 import { API_URL } from "../../Api";
 
-const RTMPage = () => {
+const RTMPage = ({ userID }) => {
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
     const [selectedYaxis, setSelectedYaxis] = useState("");
@@ -34,7 +34,7 @@ const RTMPage = () => {
     }, [selectedProject]);
 
     const fetchProjects = () => {
-        fetch(`${API_URL}/projects`)
+        fetch(`${API_URL}/projects/current-user/${userID}`)
             .then((response) => response.json())
             .then((data) => {
                 setProjects(data);

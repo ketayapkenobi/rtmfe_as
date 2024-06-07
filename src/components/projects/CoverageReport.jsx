@@ -8,7 +8,7 @@ import TestExecutionsReport from "./TestExecutionsReport";
 
 import { API_URL } from "../../Api";
 
-const CoverageReport = () => {
+const CoverageReport = ({ userID }) => {
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
     const [selectedReportType, setSelectedReportType] = useState("");
@@ -20,7 +20,7 @@ const CoverageReport = () => {
     }, []);
 
     const fetchProjects = () => {
-        fetch(`${API_URL}/projects`)
+        fetch(`${API_URL}/projects/current-user/${userID}`)
             .then((response) => response.json())
             .then((data) => {
                 setProjects(data);
