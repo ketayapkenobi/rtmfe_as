@@ -1,1 +1,2 @@
-export const API_URL = "http://localhost:7777/api";
+import appConfig from "./config";
+export const API_URL = appConfig.apiHostname;

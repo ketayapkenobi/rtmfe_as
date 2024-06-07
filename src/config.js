@@ -18,3 +18,7 @@ export const cognitoConfig = {
   userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
   clientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
 };
+
+export const appConfig = {
+  apiHostname: import.meta.env.VITE_API_HOSTNAME,
+};

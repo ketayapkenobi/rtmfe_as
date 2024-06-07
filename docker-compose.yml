@@ -2,7 +2,6 @@ version: "3.8"
 
 networks:
   artemiz-fe-develop:
-    driver: bridge
 
 services:
   site:
@@ -22,7 +21,7 @@ services:
     networks:
       - artemiz-fe-develop
   npm:
-    image: node:16.15.0
+    image: node:lts-alpine3.18
     container_name: artemiz-fe-npm
     volumes:
       - ./:/var/www/html:delegated    
