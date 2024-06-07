@@ -4,7 +4,7 @@ networks:
   artemiz:
 
 services:
-  artemiz_site:
+  site:
     env_file:
       - .env
     build:
@@ -21,7 +21,7 @@ services:
     networks:
       - artemiz
 
-  artemiz_npm:
+  npm:
     image: node:lts-alpine3.18
     container_name: artemiz-frontend-npm
     volumes:
